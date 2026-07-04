@@ -22,37 +22,42 @@ import com.lqm.strategy.TargetSelector;
  *
  * <p><b>Cách map UI → field — chia 2 nhóm theo màn hình "Chi tiết":</b>
  * <pre>
- *   ╔════════════════════════════════════════════════════════════════════╗
- *   ║  THUỘC TÍNH CƠ BẢN (BasicStats — 8 stat)                          ║
- *   ╠════════════════════════════════════════════════════════════════════╣
- *   ║   "Máu 3582"                  ───────►  maxHp = 3582f              ║
- *   ║   "Năng lượng tối đa 440"     ───────►  maxMana = 440f             ║
- *   ║   "Công vật lý 174"           ───────►  attackDamage = 174f        ║
- *   ║   "Công phép 0"               ───────►  abilityPower = 0f          ║
- *   ║   "Giáp 140 | 0%"             ───────►  armor = 140f               ║
- *   ║   "Giáp phép 80 | 0%"         ───────►  magicDefense = 80f         ║
- *   ║   "Tốc chạy 360.0"            ───────►  movementSpeed = 360f       ║
- *   ║   "Tốc đánh + 0%"             ───────►  attackSpeedBonus = 0f      ║
- *   ╠════════════════════════════════════════════════════════════════════╣
- *   ║  THUỘC TÍNH TẤN CÔNG (OffensiveStats — 9 stat)                    ║
- *   ╠════════════════════════════════════════════════════════════════════╣
- *   ║   "Xuyên giáp 0 | 0%"         ───────►  armorPenFlat=0f,          ║
- *   ║                                       armorPenPct=0f               ║
- *   ║   "Xuyên giáp phép 0"         ───────►  magicPenFlat=0f,          ║
- *   ║   "Xuyên giáp phép 0%"                   magicPenPct=0f             ║
- *   ║   "Tỷ lệ chí mạng 0%"         ───────►  critChance = 0f            ║
- *   ║   "Sát thương chí mạng 200%"  ───────►  critDamage = 2.00f         ║
- *   ║                                       (200% theo AoV base —         ║
- *   ║                                        cap 250% áp cho HoK)         ║
- *   ║   "Hút máu 0%"                ───────►  lifeSteal = 0f            ║
- *   ║   "Hút máu phép 0%"           ───────►  spellVamp = 0f            ║
- *   ║   "Giảm hồi chiêu 0%"         ───────►  cooldownReduction = 0f    ║
- *   ╠════════════════════════════════════════════════════════════════════╣
- *   ║  NGOÀI NHÓM (BaseStats flat)                                       ║
- *   ╠════════════════════════════════════════════════════════════════════╣
- *   ║   "Tầm đánh Đánh xa"          ───────►  attackRange =              ║
- *   ║                                       AttackRange.RANGED           ║
- *   ╚════════════════════════════════════════════════════════════════════╝
+ *   ╔════════════════════════════════════════════════════════════════════════╗
+ *   ║  THUỘC TÍNH CƠ BẢN (BasicStats — 6 stat, 2 hàng × 3 ô)               ║
+ *   ╠════════════════════════════════════════════════════════════════════════╣
+ *   ║   Hàng 1:                                                              ║
+ *   ║     "Máu 3582"               ───────►  maxHp = 3582f                  ║
+ *   ║     "Công vật lý 174"        ───────►  attackDamage = 174f             ║
+ *   ║     "Công phép 0"            ───────►  abilityPower = 0f               ║
+ *   ║   Hàng 2:                                                              ║
+ *   ║     "Giáp 140 | 0%"          ───────►  armor = 140f                    ║
+ *   ║     "Giáp phép 80 | 0%"      ───────►  magicDefense = 80f              ║
+ *   ║     "Năng lượng tối đa 440"  ───────►  maxMana = 440f                  ║
+ *   ╠════════════════════════════════════════════════════════════════════════╣
+ *   ║  THUỘC TÍNH TẤN CÔNG (OffensiveStats — 11 stat, 3 hàng × 3 ô)         ║
+ *   ╠════════════════════════════════════════════════════════════════════════╣
+ *   ║   Hàng 1:                                                              ║
+ *   ║     "Tốc chạy 360.0"         ───────►  movementSpeed = 360f            ║
+ *   ║     "Xuyên giáp 0 | 0%"      ───────►  armorPenFlat=0f,               ║
+ *   ║                                      armorPenPct=0f                   ║
+ *   ║     "Xuyên giáp phép 0 | 0%" ───────►  magicPenFlat=0f,               ║
+ *   ║                                      magicPenPct=0f                   ║
+ *   ║   Hàng 2:                                                              ║
+ *   ║     "Tốc đánh + 0%"          ───────►  attackSpeedBonus = 0f          ║
+ *   ║     "Tỷ lệ chí mạng 0%"      ───────►  critChance = 0f                ║
+ *   ║     "Sát thương chí mạng"    ───────►  critDamage = 2.00f              ║
+ *   ║     "200%"                                (200% theo AoV base —         ║
+ *   ║                                           cap 250% áp cho HoK)        ║
+ *   ║   Hàng 3:                                                              ║
+ *   ║     "Hút máu 0%"             ───────►  lifeSteal = 0f                 ║
+ *   ║     "Hút máu phép 0%"        ───────►  spellVamp = 0f                 ║
+ *   ║     "Giảm hồi chiêu 0%"      ───────►  cooldownReduction = 0f         ║
+ *   ╠════════════════════════════════════════════════════════════════════════╣
+ *   ║  NGOÀI NHÓM (BaseStats flat)                                          ║
+ *   ╠════════════════════════════════════════════════════════════════════════╣
+ *   ║     "Tầm đánh Đánh xa"       ───────►  attackRange =                  ║
+ *   ║                                      AttackRange.RANGED                ║
+ *   ╚════════════════════════════════════════════════════════════════════════╝
  * </pre>
  *
  * <p>Bonus% (cột thứ hai trong UI, vd "140 | 0%") <b>không</b> thuộc BaseStats — chúng đến từ item/arcana
@@ -67,7 +72,7 @@ public final class Yorn {
     /**
      * Cache instance duy nhất của BaseStats của Yorn.
      *
-     * <p>Đây là 18 chỉ số <b>gốc (base) của Yorn khi chưa trang bị gì</b>, lấy từ màn hình "Chi tiết"
+     * <p>Đây là 17 chỉ số <b>gốc (base) của Yorn khi chưa trang bị gì</b>, lấy từ màn hình "Chi tiết"
      * Liên Quân Mobile (bản VN). Mỗi dòng {@code /* xxx *&#47;} chính là nhãn trên UI để tra cứu nhanh.
      *
      * <p>Tại sao là {@code record} và cache một lần (theo Bloch Item 17, Effective Java 3rd ed.):
@@ -78,24 +83,24 @@ public final class Yorn {
      * </ul>
      */
     private static final BaseStats STATS = new BaseStats(
-            /* maxHp           */ 3582f,             // UI: "Máu 3582"
-            /* maxMana         */ 440f,              // UI: "Năng lượng tối đa 440"
-            /* attackDamage    */ 174f,              // UI: "Công vật lý 174" (sát thương đánh tay)
-            /* abilityPower    */ 0f,                // UI: "Công phép 0" (Yorn là AD carry, không dùng phép)
-            /* armor           */ 140f,              // UI: "Giáp 140 | 0%" — chỉ phần base 140; cột 0% là bonus từ item
-            /* magicDefense    */ 80f,               // UI: "Giáp phép 80 | 0%"
-            /* movementSpeed   */ 360f,              // UI: "Tốc chạy 360.0"
-            /* attackSpeedBonus*/ 0f,                // UI: "Tốc đánh + 0%" — phần base; buff từ item/passive cộng ở lớp trên
-            /* armorPenFlat    */ 0f,                // UI: "Xuyên giáp 0" (flat — bớt X giáp cố định)
-            /* armorPenPct     */ 0f,                // UI: "Xuyên giáp 0%" (phần trăm — xuyên % giáp đối phương)
-            /* magicPenFlat    */ 0f,                // UI: "Xuyên giáp phép 0" (cùng khái niệm, áp cho phép)
-            /* magicPenPct     */ 0f,                // UI: "Xuyên giáp phép 0%"
-            /* critChance      */ 0f,                // UI: "Tỷ lệ chí mạng 0%" — Yorn chưa có crit từ base
-            /* critDamage      */ 2.00f,             // UI: "Sát thương chí mạng 200%" — AoV base 2.0×, HoK cap 250%
-            /* lifeSteal       */ 0f,                // UI: "Hút máu 0%" (chỉ từ đòn đánh thường/physical)
-            /* spellVamp       */ 0f,                // UI: "Hút máu phép 0%" (chỉ từ skill phép)
-            /* cooldownReduction*/ 0f,               // UI: "Giảm hồi chiêu 0%" — phần base; trang bị/arcana cộng dồn sau
-            /* attackRange     */ AttackRange.RANGED // UI: "Tầm đánh Đánh xa" — RANGED (không phải MELEE cận chiến)
+            /* maxHp           */ 3582f,             // UI hàng 1 trái:   "Máu 3582"
+            /* attackDamage    */ 174f,              // UI hàng 1 giữa:  "Công vật lý 174" (sát thương đánh tay)
+            /* abilityPower    */ 0f,                // UI hàng 1 phải:  "Công phép 0" (Yorn AD carry, không dùng phép)
+            /* armor           */ 140f,              // UI hàng 2 trái:  "Giáp 140 | 0%" — chỉ phần base 140
+            /* magicDefense    */ 80f,               // UI hàng 2 giữa:  "Giáp phép 80 | 0%"
+            /* maxMana         */ 440f,              // UI hàng 2 phải:  "Năng lượng tối đa 440"
+            /* movementSpeed   */ 360f,              // UI tấn công h1 trái: "Tốc chạy 360.0"
+            /* armorPenFlat    */ 0f,                // UI tấn công h1 giữa: "Xuyên giáp 0" (flat)
+            /* magicPenFlat    */ 0f,                // UI tấn công h1 phải: "Xuyên giáp phép 0" (flat)
+            /* attackSpeedBonus*/ 0f,                // UI tấn công h2 trái: "Tốc đánh + 0%" — base
+            /* critChance      */ 0f,                // UI tấn công h2 giữa: "Tỷ lệ chí mạng 0%" — Yorn chưa có crit base
+            /* critDamage      */ 2.00f,             // UI tấn công h2 phải: "Sát thương chí mạng 200%" — AoV 2.0×, HoK cap 250%
+            /* lifeSteal       */ 0f,                // UI tấn công h3 trái: "Hút máu 0%" (đòn đánh thường)
+            /* spellVamp       */ 0f,                // UI tấn công h3 giữa: "Hút máu phép 0%" (skill phép)
+            /* cooldownReduction*/ 0f,               // UI tấn công h3 phải: "Giảm hồi chiêu 0%" — base
+            /* armorPenPct     */ 0f,                // (Pen % ở h1 giữa "Xuyên giáp 0%" — cặp với armorPenFlat)
+            /* magicPenPct     */ 0f,                // (Pen phép % ở h1 phải "Xuyên giáp phép 0%")
+            /* attackRange     */ AttackRange.RANGED // UI dưới cùng: "Tầm đánh Đánh xa" — RANGED
     );
 
     private Yorn() {}

@@ -20,12 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 class HeroTest {
 
     /** Helper: BaseStats stub tối thiểu — chỉ quan tâm maxHp trong các test dưới.
-     *  movementSpeed mặc định 1f (giá trị hợp lệ nhỏ nhất, không liên quan tới test dưới). */
+     *  movementSpeed mặc định 1f (giá trị hợp lệ nhỏ nhất, không liên quan tới test dưới).
+     *  critDamage mặc định 1f (giới hạn dưới của cap policy — không liên quan tới test dưới).
+     *  Tham số theo thứ tự UI mới: BasicStats(6) → OffensiveStats(11) → AttackRange. */
     private static BaseStats stubStats(float maxHp) {
         return new BaseStats(
-                maxHp, 0f, 0f, 0f, 0f, 0f, 1f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
-                AttackRange.MELEE);
+                /* basic:        */ maxHp, 0f, 0f, 0f, 0f, 0f,
+                /* offensive:    */ 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
+                /* attackRange:  */ AttackRange.MELEE);
     }
 
     /** Hero + empty enemy list → selectTarget trả null (không qua strategy). */

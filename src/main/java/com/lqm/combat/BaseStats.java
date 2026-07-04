@@ -7,31 +7,36 @@ package com.lqm.combat;
  * <p><b>Cấu trúc composed (Evans, DDD Ch.5 — Value Object cohesion):</b>
  * <pre>
  *   BaseStats                          (record)
- *     ├─ BasicStats    "Thuộc tính cơ bản"    (8 stats — vitals + combat profile)
- *     │     maxHp, maxMana, attackDamage, abilityPower,
- *     │     armor, magicDefense, movementSpeed, attackSpeedBonus
- *     ├─ OffensiveStats "Thuộc tính tấn công" (9 stats — modifiers: pen, crit, vamp, CDR)
- *     │     armorPenFlat/Pct, magicPenFlat/Pct,
- *     │     critChance, critDamage, lifeSteal, spellVamp, cooldownReduction, +caps
- *     ├─ attackRange                            (enum: MELEE / RANGED — Tầm đánh)
- *     └─ caps                                   (GameClientCaps — áp cho cả 2 nhóm)
+ *     ├─ BasicStats    "Thuộc tính cơ bản"    (6 stats — vitals + combat profile, theo UI 2 hàng × 3 ô)
+ *     │     maxHp, attackDamage, abilityPower,
+ *     │     armor, magicDefense, maxMana
+ *     ├─ OffensiveStats "Thuộc tính tấn công" (11 stats — modifiers + di chuyển, theo UI 3 hàng × 3 ô)
+ *     │     movementSpeed, armorPenFlat, magicPenFlat,
+ *     │     attackSpeedBonus, critChance, critDamage,
+ *     │     lifeSteal, spellVamp, cooldownReduction,
+ *     │     armorPenPct, magicPenPct, +caps
+ *     ├─ attackRange                            (enum: MELEE / RANGED — "Tầm đánh")
+ *     └─ caps                                   (GameClientCaps — áp cho OffensiveStats validation)
  * </pre>
+ *
+ * <p><b>Thứ tự field trong UI:</b> trái → phải, trên → dưới, từ "Thuộc tính cơ bản" → "Thuộc tính tấn công".
+ * 17 stat (không gồm attackRange) sắp xếp theo thứ tự trên màn hình chi tiết tướng.
  *
  * <p>Tách theo nhóm UI giúp:
  * <ul>
- *   <li>Validation đặt cạnh field liên quan — đọc dễ hơn 18 điều kiện trộn lẫn.</li>
+ *   <li>Validation đặt cạnh field liên quan — đọc dễ hơn 17 điều kiện trộn lẫn.</li>
  *   <li>Consumer cần chỉ "vitals" thì đọc {@code stats.basic()} thay vì truyền nguyên {@code BaseStats}
  *       (vd {@code DamageCalculator} tương lai).</li>
  *   <li>Refactor an toàn — nếu sau này muốn tách {@code SurvivalStats} (hồi máu/mana) thì chỉ
  *       động vào nhóm {@code BasicStats}, không phá {@code BaseStats} interface.</li>
  * </ul>
  *
- * <p><b>Backward-compat flat API:</b> 18 getter cũ ({@code maxHp()}, {@code armor()},
+ * <p><b>Backward-compat flat API:</b> 17 getter cũ ({@code maxHp()}, {@code armor()},
  * {@code critDamage()}, ...) vẫn tồn tại và delegate xuống {@link BasicStats} / {@link OffensiveStats}.
  * Lý do:
  * <ul>
- *   <li>Không phải sửa 18 assertion của {@code YornTest} / {@code HeroTest} khi chuyển composed.</li>
- *   <li>Yorn fixture factory có thể giữ constructor positional 18-arg quen thuộc.</li>
+ *   <li>Không phải sửa assertion của {@code YornTest} / {@code HeroTest} khi chuyển composed.</li>
+ *   <li>Yorn fixture factory có thể giữ constructor positional quen thuộc.</li>
  *   <li>Code consumer hiện tại (vd {@code Hero.getBaseStats().maxHp()}) không phải thay đổi.</li>
  * </ul>
  *
@@ -51,90 +56,81 @@ public record BaseStats(
     /**
      * Primary constructor — composed. Validation phân tán: {@link BasicStats} tự validate
      * "thuộc tính cơ bản", {@link OffensiveStats} tự validate "thuộc tính tấn công" theo caps.
-     * Constructor này chỉ check thứ thuộc về whole-record: range + caps non-null,
-     * và invariant giữa 2 nhóm với caps của {@code BaseStats} (caps phải đồng nhất với
-     * {@code OffensiveStats.caps}).
+     * Constructor này chỉ check thứ thuộc về whole-record: range non-null.
      */
     public BaseStats {
-        if (caps == null) {
-            throw new IllegalArgumentException("caps must not be null (use GameClientCaps.AOV / .HOK)");
-        }
-        if (basic == null) {
-            throw new IllegalArgumentException("basic (Thuộc tính cơ bản) must not be null");
-        }
-        if (offensive == null) {
-            throw new IllegalArgumentException("offensive (Thuộc tính tấn công) must not be null");
-        }
         if (attackRange == null) {
             throw new IllegalArgumentException("attackRange must not be null");
         }
     }
 
     /**
-     * Flat overload (backward-compat) — 18 stat + AttackRange, default caps = AoV.
+     * Flat overload (backward-compat) — 17 stat + AttackRange, default caps = AoV.
+     * Tham số sắp theo thứ tự UI: BasicStats 6 → OffensiveStats 11 → attackRange.
      * Tự build {@link BasicStats} + {@link OffensiveStats} rồi delegate xuống primary.
-     * Yorn fixture và helper test dùng overload này.
      */
     public BaseStats(
             float maxHp,
-            float maxMana,
             float attackDamage,
             float abilityPower,
             float armor,
             float magicDefense,
+            float maxMana,
             float movementSpeed,
-            float attackSpeedBonus,
             float armorPenFlat,
-            float armorPenPct,
             float magicPenFlat,
-            float magicPenPct,
+            float attackSpeedBonus,
             float critChance,
             float critDamage,
             float lifeSteal,
             float spellVamp,
             float cooldownReduction,
+            float armorPenPct,
+            float magicPenPct,
             AttackRange attackRange
     ) {
         this(
-                new BasicStats(maxHp, maxMana, attackDamage, abilityPower,
-                        armor, magicDefense, movementSpeed, attackSpeedBonus),
-                new OffensiveStats(armorPenFlat, armorPenPct, magicPenFlat, magicPenPct,
-                        critChance, critDamage, lifeSteal, spellVamp,
-                        cooldownReduction, GameClientCaps.AOV),
+                new BasicStats(maxHp, attackDamage, abilityPower, armor, magicDefense, maxMana),
+                new OffensiveStats(movementSpeed,
+                        armorPenFlat, magicPenFlat,
+                        attackSpeedBonus, critChance, critDamage,
+                        lifeSteal, spellVamp, cooldownReduction,
+                        armorPenPct, magicPenPct, GameClientCaps.AOV),
                 attackRange,
                 GameClientCaps.AOV);
     }
 
     /**
-     * Flat overload (backward-compat, explicit caps) — 18 stat + AttackRange + caps rõ ràng.
+     * Flat overload (backward-compat, explicit caps) — 17 stat + AttackRange + caps rõ ràng.
      */
     public BaseStats(
             float maxHp,
-            float maxMana,
             float attackDamage,
             float abilityPower,
             float armor,
             float magicDefense,
+            float maxMana,
             float movementSpeed,
-            float attackSpeedBonus,
             float armorPenFlat,
-            float armorPenPct,
             float magicPenFlat,
-            float magicPenPct,
+            float attackSpeedBonus,
             float critChance,
             float critDamage,
             float lifeSteal,
             float spellVamp,
             float cooldownReduction,
+            float armorPenPct,
+            float magicPenPct,
             AttackRange attackRange,
             GameClientCaps caps
     ) {
         this(
-                new BasicStats(maxHp, maxMana, attackDamage, abilityPower,
-                        armor, magicDefense, movementSpeed, attackSpeedBonus),
-                new OffensiveStats(armorPenFlat, armorPenPct, magicPenFlat, magicPenPct,
-                        critChance, critDamage, lifeSteal, spellVamp,
-                        cooldownReduction, caps),
+                new BasicStats(maxHp, attackDamage, abilityPower, armor, magicDefense, maxMana),
+                new OffensiveStats(movementSpeed,
+                        armorPenFlat, magicPenFlat,
+                        attackSpeedBonus, critChance, critDamage,
+                        lifeSteal, spellVamp, cooldownReduction,
+                        armorPenPct, magicPenPct, caps),
                 attackRange,
                 caps);
     }
@@ -144,11 +140,10 @@ public record BaseStats(
      * assertEquals(3582f, Yorn.stats().maxHp())). Delegate xuống basic()/offensive().
      * ──────────────────────────────────────────────────────────────────────────── */
 
+    /* THUỘC TÍNH CƠ BẢN — BasicStats */
+
     /** UI "Máu". */
     public float maxHp() { return basic.maxHp(); }
-
-    /** UI "Năng lượng tối đa". */
-    public float maxMana() { return basic.maxMana(); }
 
     /** UI "Công vật lý". */
     public float attackDamage() { return basic.attackDamage(); }
@@ -162,23 +157,22 @@ public record BaseStats(
     /** UI "Giáp phép" (phần base). */
     public float magicDefense() { return basic.magicDefense(); }
 
-    /** UI "Tốc chạy". */
-    public float movementSpeed() { return basic.movementSpeed(); }
+    /** UI "Năng lượng tối đa". */
+    public float maxMana() { return basic.maxMana(); }
 
-    /** UI "Tốc đánh +%". */
-    public float attackSpeedBonus() { return basic.attackSpeedBonus(); }
+    /* THUỘC TÍNH TẤN CÔNG — OffensiveStats */
+
+    /** UI "Tốc chạy". */
+    public float movementSpeed() { return offensive.movementSpeed(); }
 
     /** UI "Xuyên giáp" (flat). */
     public float armorPenFlat() { return offensive.armorPenFlat(); }
 
-    /** UI "Xuyên giáp" (%). */
-    public float armorPenPct() { return offensive.armorPenPct(); }
-
     /** UI "Xuyên giáp phép" (flat). */
     public float magicPenFlat() { return offensive.magicPenFlat(); }
 
-    /** UI "Xuyên giáp phép" (%). */
-    public float magicPenPct() { return offensive.magicPenPct(); }
+    /** UI "Tốc đánh +%". */
+    public float attackSpeedBonus() { return offensive.attackSpeedBonus(); }
 
     /** UI "Tỷ lệ chí mạng". */
     public float critChance() { return offensive.critChance(); }
@@ -194,4 +188,10 @@ public record BaseStats(
 
     /** UI "Giảm hồi chiêu". */
     public float cooldownReduction() { return offensive.cooldownReduction(); }
+
+    /** UI "Xuyên giáp" (%). */
+    public float armorPenPct() { return offensive.armorPenPct(); }
+
+    /** UI "Xuyên giáp phép" (%). */
+    public float magicPenPct() { return offensive.magicPenPct(); }
 }

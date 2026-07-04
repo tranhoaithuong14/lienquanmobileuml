@@ -16,20 +16,23 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 class BaseStatsTest {
 
-    /** BaseStats với cap policy AoV (default), tất cả stat = 0 ngoại trừ maxHp + movementSpeed. */
+    /**
+     * BaseStats với cap policy AoV (default), tất cả stat = 0 ngoại trừ maxHp + movementSpeed + critDamage.
+     * Tham số theo thứ tự UI mới: BasicStats(6) → OffensiveStats(11) → AttackRange → Caps.
+     */
     private static BaseStats aovZeros(float maxHp) {
         return new BaseStats(
-                maxHp, 0f, 0f, 0f, 0f, 0f, 1f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
-                AttackRange.MELEE, GameClientCaps.AOV);
+                /* basic:        */ maxHp, 0f, 0f, 0f, 0f, 0f,
+                /* offensive:    */ 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
+                /* attackRange + caps: */ AttackRange.MELEE, GameClientCaps.AOV);
     }
 
     /** BaseStats với cap policy HoK. */
     private static BaseStats hokZeros(float maxHp) {
         return new BaseStats(
-                maxHp, 0f, 0f, 0f, 0f, 0f, 1f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
-                AttackRange.MELEE, GameClientCaps.HOK);
+                /* basic:        */ maxHp, 0f, 0f, 0f, 0f, 0f,
+                /* offensive:    */ 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
+                /* attackRange + caps: */ AttackRange.MELEE, GameClientCaps.HOK);
     }
 
     /** Record equality: hai BaseStats cùng field → equals. */
