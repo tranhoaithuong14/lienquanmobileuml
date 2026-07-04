@@ -55,36 +55,40 @@ class BaseStatsTest {
     /** Validation: movementSpeed phải > 0. */
     @Test
     void rejectsNonPositiveMovementSpeed() {
+        // movementSpeed ở vị trí 7 (UI "Tốc chạy"). Tham số theo thứ tự UI mới.
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f,    // basic(6)
+                /* movementSpeed */ 0f, 0f, 0f, 0f,
+                /* critChance=0, critDamage=1 */ 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.AOV));
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, -1f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f,    // basic(6)
+                /* movementSpeed */ -1f, 0f, 0f, 0f,
+                /* critChance=0, critDamage=1 */ 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.AOV));
     }
 
     /** Validation: critChance ngoài [0,1] bị reject (global — không phụ thuộc caps). */
     @Test
     void rejectsCritChanceOutsideUnitInterval() {
+        // critChance ở vị trí 11 (UI "Tỷ lệ chí mạng").
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, -0.01f, 1f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
+                /* critChance */ -0.01f, /* critDamage */ 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.AOV));
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 1.01f, 1f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
+                /* critChance */ 1.01f, /* critDamage */ 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.AOV));
     }
 
     /** Validation: caps reject critDamage ngoài policy. HoK cap = 2.50; AoV không cap (Infinity). */
     @Test
     void rejectsCritDamageBelowMinimum() {
-        // dưới 1.0 — fail ở cả AoV và HoK
+        // critDamage ở vị trí 12, dưới 1.0 — fail ở cả AoV và HoK
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 0f, 0.99f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f,
+                /* critDamage */ 0.99f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.HOK));
     }
 
@@ -92,8 +96,8 @@ class BaseStatsTest {
     void hokCapsRejectsCritDamageAboveCap() {
         // AoV: cap = +Infinity → 2.51 OK. HoK: cap = 2.50 → 2.51 reject.
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 0f, 2.51f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f,
+                /* critDamage */ 2.51f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.HOK));
     }
 
@@ -101,8 +105,8 @@ class BaseStatsTest {
     void aovCapsAllowsHighCritDamage() {
         // AoV không cap critDamage — 5.00 phải pass validation (chỉ là sanity check).
         BaseStats s = new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f,
-                0f, 0f, 0f, 0f, 0f, 5.0f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f,
+                /* critDamage */ 5.0f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.AOV);
 
         assertEquals(5.0f, s.critDamage());
@@ -111,13 +115,14 @@ class BaseStatsTest {
     /** Validation: cooldownReduction > 0.40 reject ở cả AoV + HoK (cap policy giống nhau). */
     @Test
     void rejectsCooldownReductionAboveCap() {
+        // cooldownReduction ở vị trí 15 (UI "Giảm hồi chiêu").
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0.41f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f,
+                /* cooldownReduction */ 0.41f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.AOV));
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0.41f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f,
+                /* cooldownReduction */ 0.41f, 0f, 0f,
                 AttackRange.MELEE, GameClientCaps.HOK));
     }
 
@@ -125,8 +130,7 @@ class BaseStatsTest {
     @Test
     void rejectsNullAttackRange() {
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 null, GameClientCaps.AOV));
     }
 
@@ -134,8 +138,7 @@ class BaseStatsTest {
     @Test
     void rejectsNullCaps() {
         assertThrows(IllegalArgumentException.class, () -> new BaseStats(
-                100f, 0f, 0f, 0f, 0f, 0f, 0f, 0f,
-                0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, null));
     }
 }
