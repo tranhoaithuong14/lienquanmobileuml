@@ -1,0 +1,12 @@
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/combat/AttackRange.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/combat/BaseStats.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/combat/CombatStats.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/combat/Enemy.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/combat/Hero.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/combat/Position.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/hero/HeroCatalog.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/hero/Yorn.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/strategy/LowestHP.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/strategy/MinSelector.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/strategy/NearestEnemy.java
+/Users/ttran/IdeaProjects/lienquanmobileuml/src/main/java/com/lqm/strategy/TargetSelector.java
