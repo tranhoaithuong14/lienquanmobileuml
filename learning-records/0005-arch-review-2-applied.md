@@ -63,7 +63,7 @@ Even though total lines went up (added test files + MinSelector), **interface co
 ### Friction remaining (not addressed)
 
 1. **Workspace has no CONTEXT.md** (only GLOSSARY.md). Engineering skills expect CONTEXT.md + docs/adr/. GLOSSARY is being used as a substitute — flag persists across 2 reviews.
-2. **Hero exception paths untested:** `takeDamage(-x)` throws IllegalArgumentException, `heal(-x)` throws, constructor `maxHp <= 0` throws. None have tests.
+2. **Hero exception paths untested:** `takeDamage(-x)` throws IllegalArgumentException, `heal(-x)` throws, constructor `hp <= 0` throws. None have tests.
 3. **No 4th strategy yet:** if we add FarthestEnemy, MostHP, etc., MinSelector will pay for itself. Currently only ~10 duplicate lines saved.
 
 ### Lesson on deepening

@@ -1,27 +1,27 @@
 package com.moba.combat;
 
-public record CoreStats(
-        float maxHp,
-        float attackDamage,
+public record BasicStats(
+        float hp,
+        float normalAttack,
         float abilityPower,
         float armor,
         float magicDefense,
         float maxMana
 ) {
 
-    public static CoreStats of(
-            float maxHp,
-            float attackDamage,
+    public static BasicStats of(
+            float hp,
+            float normalAttack,
             float abilityPower,
             float armor,
             float magicDefense,
             float maxMana) {
-        return new CoreStats(maxHp, attackDamage, abilityPower, armor, magicDefense, maxMana);
+        return new BasicStats(hp, normalAttack, abilityPower, armor, magicDefense, maxMana);
     }
 
-    public CoreStats {
-        if (maxHp <= 0f) {
-            throw new IllegalArgumentException("maxHp must be > 0, got " + maxHp);
+    public BasicStats {
+        if (hp <= 0f) {
+            throw new IllegalArgumentException("hp must be > 0, got " + hp);
         }
         if (maxMana < 0f) {
             throw new IllegalArgumentException("maxMana must be >= 0, got " + maxMana);

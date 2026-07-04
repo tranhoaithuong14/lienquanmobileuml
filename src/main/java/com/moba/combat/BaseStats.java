@@ -1,7 +1,7 @@
 package com.moba.combat;
 
 public record BaseStats(
-        CoreStats core,
+        BasicStats basic,
         OffensiveStats offensive,
         AttackRange attackRange
 ) {
@@ -13,8 +13,8 @@ public record BaseStats(
     }
 
     public BaseStats(
-            float maxHp,
-            float attackDamage,
+            float hp,
+            float normalAttack,
             float abilityPower,
             float armor,
             float magicDefense,
@@ -33,7 +33,7 @@ public record BaseStats(
             AttackRange attackRange
     ) {
         this(
-                new CoreStats(maxHp, attackDamage, abilityPower, armor, magicDefense, maxMana),
+                new BasicStats(hp, normalAttack, abilityPower, armor, magicDefense, maxMana),
                 new OffensiveStats(movementSpeed, armorPen, magicPen,
                         attackSpeed, critChance, critDamage,
                         lifeSteal, spellVamp, cooldownReduction,
@@ -41,14 +41,14 @@ public record BaseStats(
                 attackRange);
     }
 
-    /* shortcut — delegate down to core / offensive */
+    /* shortcut — delegate down to basic / offensive */
 
-    public float maxHp() { return core.maxHp(); }
-    public float attackDamage() { return core.attackDamage(); }
-    public float abilityPower() { return core.abilityPower(); }
-    public float armor() { return core.armor(); }
-    public float magicDefense() { return core.magicDefense(); }
-    public float maxMana() { return core.maxMana(); }
+    public float hp() { return basic.hp(); }
+    public float normalAttack() { return basic.normalAttack(); }
+    public float abilityPower() { return basic.abilityPower(); }
+    public float armor() { return basic.armor(); }
+    public float magicDefense() { return basic.magicDefense(); }
+    public float maxMana() { return basic.maxMana(); }
 
     public float movementSpeed() { return offensive.movementSpeed(); }
     public float armorPen() { return offensive.armorPen(); }

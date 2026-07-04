@@ -2,7 +2,7 @@ package com.moba.hero;
 
 import com.moba.combat.AttackRange;
 import com.moba.combat.BaseStats;
-import com.moba.combat.CoreStats;
+import com.moba.combat.BasicStats;
 import com.moba.combat.Hero;
 import com.moba.combat.OffensiveStats;
 import com.moba.combat.Position;
@@ -14,7 +14,7 @@ public final class Yorn {
     public static final String NAME = "Yorn";
 
     private static final BaseStats STATS = new BaseStats(
-            new CoreStats(
+            new BasicStats(
                     3582f, 174f, 0f, 140f, 80f, 440f
             ),
             new OffensiveStats(

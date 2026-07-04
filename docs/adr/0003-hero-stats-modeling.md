@@ -2,24 +2,24 @@
 
 ## Status
 
-**Superseded by implementation under `com.moba.combat`** — research deliverable retained as historical record of the primary-source findings that shaped the value-object decomposition (`BaseStats` = `CoreStats` + `OffensiveStats` + `AttackRange`). The implementation kept the directional semantics (pen subtracts before mitigation; life steal is post-mitigation; critDamage ≥ 1.0; cooldownReduction ∈ [0, 0.40]) and dropped the multi-client cross-checks that were useful during research but have no place in the teaching artifact.
+**Superseded by implementation under `com.moba.combat`** — research deliverable retained as historical record of the primary-source findings that shaped the value-object decomposition (`BaseStats` = `BasicStats` + `OffensiveStats` + `AttackRange`). The implementation kept the directional semantics (pen subtracts before mitigation; life steal is post-mitigation; critDamage ≥ 1.0; cooldownReduction ∈ [0, 0.40]) and dropped the multi-client cross-checks that were useful during research but have no place in the teaching artifact.
 
-> Note on language: prose is English for density; domain terms use the ubiquitous language from `CONTEXT.md` (Hero, Enemy, currentHp, maxHp, alive, Position, TargetSelector, NearestEnemy, LowestHP). ADR-0001 and ADR-0002 remain the binding constraints.
+> Note on language: prose is English for density; domain terms use the ubiquitous language from `CONTEXT.md` (Hero, Enemy, currentHp, hp, alive, Position, TargetSelector, NearestEnemy, LowestHP). ADR-0001 and ADR-0002 remain the binding constraints.
 
 ## Context
 
-The original `CombatStats` (later renamed during the rename pass) is **only an HP state machine**: `maxHp`, `currentHp`, `alive` + `takeDamage/heal/respawn/isAlive`. It holds no attack, armor, mana, crit, or range data. A MOBA hero detail screen shows roughly 16 stats. This ADR investigates how to model the full sheet.
+The original `CombatStats` (later renamed during the rename pass) is **only an HP state machine**: `hp`, `currentHp`, `alive` + `takeDamage/heal/respawn/isAlive`. It holds no attack, armor, mana, crit, or range data. A MOBA hero detail screen shows roughly 16 stats. This ADR investigates how to model the full sheet.
 
 Reference stat sheet — a ranged marksman archetype, values typical for the genre:
 
 | Group | Stat | Value |
 |---|---|---|
-| Core | maxHp | ~3600 |
-| Core | armor | ~140 (+0%) |
-| Core | attackDamage | ~174 |
-| Core | magicDefense | ~80 (+0%) |
-| Core | abilityPower | 0 |
-| Core | maxMana | ~440 |
+| Basic | hp | ~3600 |
+| Basic | armor | ~140 (+0%) |
+| Basic | normalAttack | ~174 |
+| Basic | magicDefense | ~80 (+0%) |
+| Basic | abilityPower | 0 |
+| Basic | maxMana | ~440 |
 | Offensive | movementSpeed | 360 |
 | Offensive | attackSpeed bonus | +0% |
 | Offensive | armorPen (flat / %) | 0 / 0% |
@@ -45,11 +45,11 @@ Reference stat sheet — a ranged marksman archetype, values typical for the gen
 
 **Classification.**
 
-- **Pure values (candidates for `final` fields on an immutable Value Object):** maxHp, armor, attackDamage, magicDefense, abilityPower, maxMana, movementSpeed, attackSpeed bonus, armorPen (flat + %), magicPen (flat + %), critChance, critDamage, lifeSteal, spellVamp, cooldownReduction, attackRange, hp/5s, mana/5s.
+- **Pure values (candidates for `final` fields on an immutable Value Object):** hp, armor, normalAttack, magicDefense, abilityPower, maxMana, movementSpeed, attackSpeed bonus, armorPen (flat + %), magicPen (flat + %), critChance, critDamage, lifeSteal, spellVamp, cooldownReduction, attackRange, hp/5s, mana/5s.
 - **Derived (computed, never stored):** effective armor after pen (`armor − flatPen`, then `× (1 − %pen)`); physical damage reduction fraction; effective HP; post-mitigation damage; attacks-per-second from attackSpeed bonus; effective cooldown from cooldownReduction; expected crit value from critChance × critDamage.
 - **Stateful / mutable (belongs on the Entity, not the Value Object):** currentHp, currentMana, `alive`, cooldown timers, temporary buff stacks. These already live (for HP) in the existing `CombatStats` state machine per ADR-0002.
 
-**Recommendation.** Keep two clearly separated concepts: an **immutable base-stat Value Object** (the sheet) and the **existing mutable vitals state machine** (`CombatStats`, HP/mana + `alive`). Do not fold static values into the mutable class; do not store derived values at all. This preserves ADR-0002 (HP is `float`, `maxHp` final) unchanged.
+**Recommendation.** Keep two clearly separated concepts: an **immutable base-stat Value Object** (the sheet) and the **existing mutable vitals state machine** (`CombatStats`, HP/mana + `alive`). Do not fold static values into the mutable class; do not store derived values at all. This preserves ADR-0002 (HP is `float`, `hp` final) unchanged.
 
 ### R2 — Cleanest decomposition
 
@@ -57,12 +57,12 @@ Reference stat sheet — a ranged marksman archetype, values typical for the gen
 - *Records are Value Objects* (Bloch Item 17 + JLS records): a Java `record` is shallowly immutable with generated `equals`/`hashCode`/`toString` — the language's built-in Value Object.
 - *Introduce Parameter Object / small grouped values* (Evans Ch. 5; Fowler, *Refactoring*).
 
-**Recommendation.** An immutable `BaseStats` (or equivalent) **record** composed of a few cohesive Value Objects — `CoreStats` (maxHp, attackDamage, abilityPower, armor, magicDefense, maxMana), `OffensiveStats` (movementSpeed, armorPen, magicPen, attackSpeed, crit, lifeSteal, spellVamp, cooldownReduction, attackRange), `AttackRange` enum. Keep the existing mutable `CombatStats` as the **vitals runtime state** (currentHp/currentMana/alive); do not merge the two. Model armor / magic defense and each pen as flat + bonus% / flat + pct Value Objects to kill data clumps.
+**Recommendation.** An immutable `BaseStats` (or equivalent) **record** composed of a few cohesive Value Objects — `BasicStats` (hp, normalAttack, abilityPower, armor, magicDefense, maxMana), `OffensiveStats` (movementSpeed, armorPen, magicPen, attackSpeed, crit, lifeSteal, spellVamp, cooldownReduction, attackRange), `AttackRange` enum. Keep the existing mutable `CombatStats` as the **vitals runtime state** (currentHp/currentMana/alive); do not merge the two. Model armor / magic defense and each pen as flat + bonus% / flat + pct Value Objects to kill data clumps.
 
 ### R3 — How to model `attackRange`
 
 - *Enums instead of int/String constants* (Bloch Item 34).
-- The detail screen and second-source cross-check both show attack range as a **discrete label** ("Đánh xa" / Ranged) — categorical, not numeric.
+- The detail screen and second-source cross-check both show attack range as a **discrete label** (e.g. Ranged / Melee) — categorical, not numeric.
 
 **Recommendation.** Model the sheet field as an `enum AttackRange { MELEE, RANGED }` (Bloch Item 34). Do **not** use a `String`. Any numeric reach belongs in a separate `float` field added later.
 
@@ -146,7 +146,7 @@ trueDamage          = rawTrue                        // ignores armor by definit
 ## Open questions
 
 1. **Mitigation coefficient** — can an authoritative source (patch notes, official forum, client data-mine with provenance) confirm the `DEF/(DEF+k)` curve and `k`? Until then it stays behind a Strategy, marked UNVERIFIED.
-2. **Split granularity (R2)** — one `BaseStats` record now, or `CoreStats`/`OffensiveStats` split from the start? Depends on how soon consumers need narrow slices.
+2. **Split granularity (R2)** — one `BaseStats` record now, or `BasicStats`/`OffensiveStats` split from the start? Depends on how soon consumers need narrow slices.
 3. **Role-interface vocabulary (R5)** — names for the position-only and hp-only interfaces; must be added to `CONTEXT.md` with `_Avoid_` aliases before coding.
 4. **Where do the bonus channels come from** — items, runes, level? Modeling the *source* of bonuses (not just the total) may pull in the Decorator/aggregation design earlier than expected.
 5. **Regen & energy** — do we model HP/5s, Mana/5s, and energy-type heroes now, or defer?

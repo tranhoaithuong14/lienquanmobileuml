@@ -33,16 +33,16 @@ The persistent flag (CONTEXT.md missing) was resolved after 3 reviews.
 
 **docs/adr/0002-hero-combat-semantics.md** (new):
 - Status: accepted
-- Decision: float HP, maxHp final at constructor, heal no-op when dead, respawn separate
-- Considered: int HP, mutable maxHp, heal auto-revive, isAlive only (no alive flag)
+- Decision: float HP, hp final at constructor, heal no-op when dead, respawn separate
+- Considered: int HP, mutable hp, heal auto-revive, isAlive only (no alive flag)
 - Consequences: `Enemy.getCurrentHp` float, removed `getCurrentHpExact`, constructor validation
 
 ### Candidate 2: Hero + CombatStats composition
 
 **CombatStats.java** (new):
-- Pure HP state machine: maxHp, currentHp, alive + takeDamage/heal/respawn/isAlive/getCurrentHp/getMaxHp
+- Pure HP state machine: hp, currentHp, alive + takeDamage/heal/respawn/isAlive/getCurrentHp/getHp
 - 0 dependencies on Hero/Position/TargetSelector — pure, reusable
-- Constructor throws when maxHp ≤ 0
+- Constructor throws when hp ≤ 0
 
 **Hero.java** (refactored):
 - Fields: name, position, stats (CombatStats), targetSelector
@@ -52,7 +52,7 @@ The persistent flag (CONTEXT.md missing) was resolved after 3 reviews.
 
 **CombatStatsTest.java** (new, 11 tests):
 - 7 HP lifecycle tests (mirror HeroTest cycles 1–7, now on CombatStats)
-- 3 exception path tests (constructor non-positive maxHp, takeDamage(-x), heal(-x)) — **closes the coverage gap flagged in LR-0005**
+- 3 exception path tests (constructor non-positive hp, takeDamage(-x), heal(-x)) — **closes the coverage gap flagged in LR-0005**
 - 1 hero kill test (overlap with the old test, rewritten for CombatStats)
 
 **HeroTest.java** (refactored, 5 tests):

@@ -42,15 +42,15 @@ _(Not implemented.)_ Filters the candidate list to only enemy heroes, ignoring m
 ## Combat lifecycle (added 2026-07-04)
 
 **CombatStats**:
-HP state machine for an entity that can take damage and die. Split out from Hero in review #3 (Hero → Hero + CombatStats composition). Owns maxHp, currentHp, alive + the actions (takeDamage, heal, respawn, isAlive). Reusable for towers, creeps, summons.
+HP state machine for an entity that can take damage and die. Split out from Hero in review #3 (Hero → Hero + CombatStats composition). Owns hp, currentHp, alive + the actions (takeDamage, heal, respawn, isAlive). Reusable for towers, creeps, summons.
 _Avoid_: Health, HpState
 
 **currentHp**:
-Current HP of the Hero, `float`. Mutable via `takeDamage` and `heal`. Floor 0, ceiling maxHp.
+Current HP of the Hero, `float`. Mutable via `takeDamage` and `heal`. Floor 0, ceiling hp.
 _Avoid_: hp, HP
 
-**maxHp**:
-Upper bound of currentHp, `float`. Final, set at constructor. currentHp starts equal to maxHp.
+**hp**:
+Upper bound of currentHp, `float`. Final, set at constructor. currentHp starts equal to hp. Matches the "HP" label on the in-game hero detail screen.
 _Avoid_: maxHealth, hpCap
 
 **alive**:
@@ -66,11 +66,11 @@ Hero method that decreases currentHp. Accepts amount ≥ 0. Floors at 0. Marks t
 _Avoid_: damage, applyDamage
 
 **heal**:
-Hero method that increases currentHp. Accepts amount ≥ 0. Ceilings at maxHp. No-op if dead (gameplay: dead heroes cannot be healed).
+Hero method that increases currentHp. Accepts amount ≥ 0. Ceilings at hp. No-op if dead (gameplay: dead heroes cannot be healed).
 _Avoid_: restore, recover
 
 **respawn**:
-Hero method that brings it back to life. Sets `alive=true` and `currentHp=maxHp`. Triggered by an external respawn timer, not from heal.
+Hero method that brings it back to life. Sets `alive=true` and `currentHp=hp`. Triggered by an external respawn timer, not from heal.
 _Avoid_: revive, spawnAgain
 
 ## Geometry (added 2026-07-04)

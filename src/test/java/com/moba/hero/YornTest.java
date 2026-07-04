@@ -13,7 +13,7 @@ class YornTest {
 
     @Test
     void yornMaxHpMatchesSheet() {
-        assertEquals(3582f, Yorn.stats().maxHp());
+        assertEquals(3582f, Yorn.stats().hp());
     }
 
     @Test
@@ -23,7 +23,7 @@ class YornTest {
 
     @Test
     void yornAttackDamageMatchesSheet() {
-        assertEquals(174f, Yorn.stats().attackDamage());
+        assertEquals(174f, Yorn.stats().normalAttack());
     }
 
     @Test

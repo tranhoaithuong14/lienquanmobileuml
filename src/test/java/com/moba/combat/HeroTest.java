@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 class HeroTest {
 
-    private static BaseStats minimalStats(float maxHp) {
+    private static BaseStats minimalStats(float hp) {
         return new BaseStats(
-                maxHp, 0f, 0f, 0f, 0f, 0f,
+                hp, 0f, 0f, 0f, 0f, 0f,
                 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE);
     }

@@ -13,10 +13,10 @@ Drove 7 pure TDD cycles after the grilling session, transforming Hero from a dat
 | Decision | Value |
 |----------|-------|
 | HP type | float (instead of int) |
-| maxHp | final, set at constructor |
+| hp | final, set at constructor |
 | takeDamage | `float amount` ≥ 0; clamp 0; set alive=false if HP ≤ 0 |
-| heal | `float amount` ≥ 0; clamp maxHp; no-op if !alive |
-| respawn | separate method; set alive=true, currentHp=maxHp |
+| heal | `float amount` ≥ 0; clamp hp; no-op if !alive |
+| respawn | separate method; set alive=true, currentHp=hp |
 | isAlive | returns alive |
 
 Decisions are based on the genre's actual gameplay: heal does not work on dead heroes (game mechanic), revival happens via an external respawn timer (not auto-revive from heal).
@@ -30,7 +30,7 @@ After: Hero interface = 5 methods (getPosition, getCurrentHp, getName, takeDamag
 
 ### Locality gained
 
-HP state (currentHp, maxHp, alive) and HP-mutation logic (takeDamage, heal, respawn) all live in Hero. Future damage modifiers (armor, magic resistance), life steal, regen — all of those will be methods on Hero or composition through Hero, not scattered.
+HP state (currentHp, hp, alive) and HP-mutation logic (takeDamage, heal, respawn) all live in Hero. Future damage modifiers (armor, magic resistance), life steal, regen — all of those will be methods on Hero or composition through Hero, not scattered.
 
 ### Test coverage
 
@@ -43,7 +43,7 @@ HeroTest went from 1 test → 8 tests. Each method has at least 1 dedicated test
 2. Edge case: takeDamage clamps at 0
 3. State transition: HP=0 → !alive → selectTarget=null
 4. Positive case: heal increases HP
-5. Edge case (characterization): heal clamps at maxHp
+5. Edge case (characterization): heal clamps at hp
 6. Dead-state: heal is a no-op when dead
 7. State transition: respawn restores
 
@@ -55,4 +55,4 @@ HeroTest went from 1 test → 8 tests. Each method has at least 1 dedicated test
 
 ### Architecture note
 
-The workspace still lacks `CONTEXT.md` at this stage (only `GLOSSARY.md` exists). New domain terms (currentHp, maxHp, takeDamage, heal, respawn, isAlive, alive) were added to GLOSSARY.md. If the workspace later adopts CONTEXT.md, vocabulary consistency needs a recheck.
+The workspace still lacks `CONTEXT.md` at this stage (only `GLOSSARY.md` exists). New domain terms (currentHp, hp, takeDamage, heal, respawn, isAlive, alive) were added to GLOSSARY.md. If the workspace later adopts CONTEXT.md, vocabulary consistency needs a recheck.

@@ -2,16 +2,16 @@ package com.moba.combat;
 
 public class CombatStats {
 
-    private final float maxHp;
+    private final float hp;
     private float currentHp;
     private boolean alive;
 
-    public CombatStats(float maxHp) {
-        if (maxHp <= 0) {
-            throw new IllegalArgumentException("maxHp must be > 0, got " + maxHp);
+    public CombatStats(float hp) {
+        if (hp <= 0) {
+            throw new IllegalArgumentException("hp must be > 0, got " + hp);
         }
-        this.maxHp = maxHp;
-        this.currentHp = maxHp;
+        this.hp = hp;
+        this.currentHp = hp;
         this.alive = true;
     }
 
@@ -32,12 +32,12 @@ public class CombatStats {
         if (!alive) {
             return;
         }
-        currentHp = Math.min(maxHp, currentHp + amount);
+        currentHp = Math.min(hp, currentHp + amount);
     }
 
     public void respawn() {
         alive = true;
-        currentHp = maxHp;
+        currentHp = hp;
     }
 
     public boolean isAlive() {
@@ -48,7 +48,7 @@ public class CombatStats {
         return currentHp;
     }
 
-    public float getMaxHp() {
-        return maxHp;
+    public float getHp() {
+        return hp;
     }
 }

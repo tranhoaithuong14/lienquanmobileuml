@@ -7,26 +7,26 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class BaseStatsTest {
 
-    private static BaseStats allZeroExceptMaxHp(float maxHp) {
+    private static BaseStats allZeroExceptHp(float hp) {
         return new BaseStats(
-                /* core:        */ maxHp, 0f, 0f, 0f, 0f, 0f,
+                /* basic:       */ hp, 0f, 0f, 0f, 0f, 0f,
                 /* offensive:   */ 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 /* attackRange: */ AttackRange.MELEE);
     }
 
     @Test
     void recordEqualityHolds() {
-        BaseStats a = allZeroExceptMaxHp(100f);
-        BaseStats b = allZeroExceptMaxHp(100f);
+        BaseStats a = allZeroExceptHp(100f);
+        BaseStats b = allZeroExceptHp(100f);
 
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
     }
 
     @Test
-    void rejectsNonPositiveMaxHp() {
-        assertThrows(IllegalArgumentException.class, () -> allZeroExceptMaxHp(0f));
-        assertThrows(IllegalArgumentException.class, () -> allZeroExceptMaxHp(-1f));
+    void rejectsNonPositiveHp() {
+        assertThrows(IllegalArgumentException.class, () -> allZeroExceptHp(0f));
+        assertThrows(IllegalArgumentException.class, () -> allZeroExceptHp(-1f));
     }
 
     @Test

@@ -39,7 +39,7 @@ _Avoid_: Weakest target, Lowest health strategy
 ### Combat Lifecycle
 
 **Hero**:
-A character in a MOBA. Both an attacker (owns a `TargetSelector` to pick a target) and a target (implements `Enemy` so others can pick it). Owns HP lifecycle (currentHp, maxHp, alive state).
+A character in a MOBA. Both an attacker (owns a `TargetSelector` to pick a target) and a target (implements `Enemy` so others can pick it). Owns HP lifecycle (currentHp, hp, alive state).
 _Avoid_: Champion, Character, Avatar
 
 **Enemy**:
@@ -47,11 +47,11 @@ Any entity that can be picked as a target: Hero, minion, jungle monster, tower. 
 _Avoid_: Target, Opponent
 
 **currentHp**:
-Current HP of the Hero, `float`. Mutable via `takeDamage` and `heal`. Floor 0, ceiling maxHp.
+Current HP of the Hero, `float`. Mutable via `takeDamage` and `heal`. Floor 0, ceiling hp.
 _Avoid_: hp, HP
 
-**maxHp**:
-Upper bound of `currentHp`, `float`. Final, set at constructor. `currentHp` starts equal to `maxHp`.
+**hp**:
+Upper bound of `currentHp`, `float`. Final, set at constructor. `currentHp` starts equal to `hp`. Matches the "HP" label on the in-game hero detail screen.
 _Avoid_: maxHealth, hpCap
 
 **active** _(historical)_:
@@ -67,11 +67,11 @@ Hero method that decreases currentHp. Accepts amount ≥ 0. Floors at 0. Marks t
 _Avoid_: damage, applyDamage
 
 **heal**:
-Hero method that increases currentHp. Accepts amount ≥ 0. Ceilings at maxHp. No-op if the Hero is dead (matches gameplay: dead heroes cannot be healed).
+Hero method that increases currentHp. Accepts amount ≥ 0. Ceilings at hp. No-op if the Hero is dead (matches gameplay: dead heroes cannot be healed).
 _Avoid_: restore, recover
 
 **respawn**:
-Hero method that brings it back to life. Sets `alive=true` and `currentHp=maxHp`. Matches gameplay: triggered by an external respawn timer, not from `heal`.
+Hero method that brings it back to life. Sets `alive=true` and `currentHp=hp`. Matches gameplay: triggered by an external respawn timer, not from `heal`.
 _Avoid_: revive, spawnAgain
 
 ### Geometry

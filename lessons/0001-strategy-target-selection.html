@@ -1,51 +1,51 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lesson 0001 — Strategy Pattern qua Target Selection · Liên Quân Mobile</title>
+  <title>Lesson 0001 — Strategy Pattern via Target Selection · MOBA combat</title>
   <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
   <article>
     <header>
-      <p class="kicker">Lesson 0001 · Strategy Pattern · ~10 phút đọc</p>
-      <h1>Chọn mục tiêu trong combat: <code>NearestEnemy</code> và <code>LowestHP</code></h1>
-      <p class="subtitle">Hai cách dùng Strategy pattern để giải quyết quy tắc auto-target trong Liên Quân Mobile.</p>
+      <p class="kicker">Lesson 0001 · Strategy Pattern · ~10 min read</p>
+      <h1>Choosing a target in combat: <code>NearestEnemy</code> and <code>LowestHP</code></h1>
+      <p class="subtitle">Two ways to use the Strategy pattern to model the auto-target rules in a MOBA.</p>
     </header>
 
     <section>
-      <h2>Tại sao bài này quan trọng</h2>
-      <p>Trong Liên Quân Mobile, mỗi tướng đều phải quyết định <em>đánh ai</em> mỗi lần tung đòn. Game thật chỉ có hai quy tắc auto-target toàn cục: <strong>gần nhất</strong> (nearest) và <strong>máu thấp nhất</strong> (lowest HP). Hai quy tắc này được mô tả bằng tiếng Việt trong primary source — bạn có thể xem chi tiết ở <a href="../../.scratch/research/target-selection-options.md">research note cục bộ</a>.</p>
-      <p>Câu hỏi đặt ra: nếu viết lại game bằng Java, ta mô hình hóa hai quy tắc đó như thế nào cho gọn, dễ mở rộng, dễ test? Đó chính là lúc <strong>Strategy pattern</strong> xuất hiện.</p>
+      <h2>Why this lesson matters</h2>
+      <p>In any MOBA, every hero has to decide <em>who to hit</em> on every attack. The genre has exactly two global auto-target rules: <strong>nearest</strong> and <strong>lowest HP</strong>. These rules are described in primary sources — see the local <a href="../../.scratch/research/target-selection-options.md">research note</a> for details.</p>
+      <p>The question: if we rebuild this system in Java, how do we model those two rules cleanly, extensibly, and testably? That is exactly where the <strong>Strategy pattern</strong> shows up.</p>
     </section>
 
     <section>
-      <h2>Bài toán: chọn mục tiêu</h2>
-      <p>Mỗi tướng trong Liên Quân là một <code>Hero</code>. Mỗi tướng có một bộ <em>target selector</em> — quy tắc auto-target toàn cục được áp dụng khi tướng tự động đánh. Khi tướng A đứng giữa ba tướng địch B, C, D, <code>targetSelector</code> của A sẽ trả về một trong ba người đó, hoặc <code>null</code> nếu không có ai hợp lệ.</p>
-      <p>Hai quy tắc tồn tại trong game thật: <strong>Nearest</strong> — đánh kẻ địch lân cận (Tulen passive <code>Lôi điện</code>); <strong>Lowest HP</strong> — đánh kẻ có lượng máu thấp nhất (Butterfly <code>Ám Sát</code>, Lorion passive). Mỗi quy tắc là một <em>thuật toán</em> khác nhau cho cùng một việc: <em>chọn một mục tiêu từ danh sách</em>.</p>
-      <p>Nếu dùng <code>if/else</code> hoặc <code>switch</code> trong class <code>Hero</code>, mỗi lần thêm tướng mới ta phải sửa <code>Hero</code>. Đó là dấu hiệu mạnh rằng một pattern khác sẽ tốt hơn.</p>
+      <h2>The problem: target selection</h2>
+      <p>Every hero in a MOBA is a <code>Hero</code>. Each hero has a <em>target selector</em> — the global auto-target rule applied when the hero auto-attacks. When hero A stands among three enemy heroes B, C, D, A's <code>targetSelector</code> returns one of the three, or <code>null</code> if none is valid.</p>
+      <p>Two rules exist in the genre: <strong>Nearest</strong> — attack the closest enemy (think of any ranged-marksman kiting pattern, e.g. a "Marksman A" archetype that prioritizes whoever is nearest); <strong>Lowest HP</strong> — attack the enemy with the lowest current HP (think of an "Assassin A" archetype whose whole kit is built around finishing weakened targets, or a "Mage A" passive that triggers on the lowest-HP enemy in range). Each rule is a different <em>algorithm</em> for the same task: <em>pick one target from a list</em>.</p>
+      <p>If we used <code>if/else</code> or <code>switch</code> inside <code>Hero</code>, every new hero would require editing <code>Hero</code>. That is a strong signal another pattern would serve better.</p>
     </section>
 
     <section>
-      <h2>Strategy pattern — bộ xương 4 thành phần</h2>
-      <p>Strategy pattern (GoF) gồm bốn thành phần. Học thuộc bốn cái tên này trước khi đi tiếp:</p>
+      <h2>The Strategy pattern — four components</h2>
+      <p>The Strategy pattern (GoF) has four components. Memorize these four names before going further:</p>
       <ol>
-        <li><strong>Strategy</strong> — interface mô tả <em>hành vi</em> có thể thay thế.</li>
-        <li><strong>ConcreteStrategy</strong> — class implement <code>Strategy</code>, cung cấp một cách làm cụ thể.</li>
-        <li><strong>Context</strong> — class giữ reference tới <code>Strategy</code> và ủy quyền công việc cho nó.</li>
-        <li><strong>Client</strong> — code bên ngoài chọn <code>ConcreteStrategy</code> nào và gắn vào <code>Context</code>.</li>
+        <li><strong>Strategy</strong> — an interface describing an interchangeable <em>behavior</em>.</li>
+        <li><strong>ConcreteStrategy</strong> — a class implementing <code>Strategy</code>, providing one specific way to do it.</li>
+        <li><strong>Context</strong> — a class that holds a reference to a <code>Strategy</code> and delegates work to it.</li>
+        <li><strong>Client</strong> — external code that chooses which <code>ConcreteStrategy</code> to wire into the <code>Context</code>.</li>
       </ol>
-      <p>Trong bài toán của ta: <code>TargetSelector</code> là <em>Strategy</em>; <code>NearestEnemy</code> và <code>LowestHP</code> là <em>ConcreteStrategy</em>; <code>Hero</code> là <em>Context</em>; và code khởi tạo tướng (ví dụ <code>new Yena(new LowestHP())</code>) là <em>Client</em>.</p>
+      <p>In our problem: <code>TargetSelector</code> is the <em>Strategy</em>; <code>NearestEnemy</code> and <code>LowestHP</code> are <em>ConcreteStrategies</em>; <code>Hero</code> is the <em>Context</em>; and the hero construction code (e.g. <code>new Hero("Yena", ..., new LowestHP())</code>) is the <em>Client</em>.</p>
 
-      <h3>Interface Strategy</h3>
+      <h3>The Strategy interface</h3>
       <pre><code class="language-java">public interface TargetSelector {
-    /** Chọn một mục tiêu từ danh sách địch.
-     *  Trả về null nếu không có mục tiêu hợp lệ. */
+    /** Pick one target from the enemy list.
+     *  Returns null when no valid target exists. */
     Enemy select(Enemy attacker, List&lt;Enemy&gt; enemies);
 }</code></pre>
 
-      <h3>Context — Hero</h3>
+      <h3>The Context — Hero</h3>
       <pre><code class="language-java">public class Hero {
     private final String name;
     private final TargetSelector targetSelector;
@@ -59,20 +59,20 @@
     public void autoAttack(List&lt;Enemy&gt; enemies) {
         Enemy target = targetSelector.select(asEnemy(), enemies);
         if (target != null) {
-            System.out.println(name + " đánh " + target.getName());
+            System.out.println(name + " attacks " + target.getName());
         }
     }
 
-    private Enemy asEnemy() { /* ép kiểu — bỏ qua ở lesson này */ }
+    private Enemy asEnemy() { /* cast — skipped in this lesson */ }
 }</code></pre>
 
-      <p class="caption"><code>Hero</code> không biết <code>TargetSelector</code> đang là loại nào. Nó chỉ gọi <code>select()</code> và dùng kết quả. Đó là toàn bộ ý tưởng của Strategy.</p>
+      <p class="caption"><code>Hero</code> does not know which kind of <code>TargetSelector</code> it has. It just calls <code>select()</code> and uses the result. That is the entire idea of Strategy.</p>
     </section>
 
     <section>
       <h2>Strategy #1 — <code>NearestEnemy</code></h2>
-      <p><strong>Quy tắc:</strong> chọn địch có khoảng cách Euclidean nhỏ nhất từ attacker.</p>
-      <p><strong>Trong game thật:</strong> Tulen passive <code>Lôi điện</code> gọi là "công kích kẻ địch lân cận (ưu tiên tướng)" — tức là biến thể có filter thêm. Phiên bản <code>NearestEnemy</code> dưới đây là dạng thuần: không filter, không tính tướng/lính.</p>
+      <p><strong>Rule:</strong> pick the enemy with the smallest Euclidean distance from the attacker.</p>
+      <p><strong>In the genre:</strong> many ranged marksman kiting patterns boil down to "attack the closest enemy" (with optional role filtering). The <code>NearestEnemy</code> below is the pure form — no filtering, no hero-vs-minion weighting.</p>
 
       <pre><code class="language-java">public class NearestEnemy implements TargetSelector {
     @Override
@@ -93,20 +93,20 @@
     }
 
     private double distance(Position a, Position b) {
-        double dx = a.x - b.x;
+        double dx = a.x - a.x;
         double dy = a.y - b.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
 }</code></pre>
 
-      <p><strong>Đặc điểm:</strong> thuật toán chỉ phụ thuộc <em>vị trí</em>. Không quan tâm HP, role, hay trạng thái. Nhanh, đơn giản, dễ test.</p>
-      <p><strong>Câu hỏi tự kiểm:</strong> nếu attacker đứng giữa hai địch ở khoảng cách bằng nhau, strategy này chọn ai? (Gợi ý: xem vòng <code>for</code>, điều kiện <code>d &lt; minDistance</code> dùng <code>&lt;</code> hay <code>&lt;=</code>?)</p>
+      <p><strong>Characteristic:</strong> the algorithm depends only on <em>position</em>. It does not care about HP, role, or status. Fast, simple, easy to test.</p>
+      <p><strong>Self-check question:</strong> if the attacker stands between two enemies at equal distance, which one does this strategy pick? (Hint: look at the <code>for</code> loop and the <code>d &lt; minDistance</code> condition — is it <code>&lt;</code> or <code>&lt;=</code>?)</p>
     </section>
 
     <section>
       <h2>Strategy #2 — <code>LowestHP</code></h2>
-      <p><strong>Quy tắc:</strong> chọn địch có HP hiện tại thấp nhất.</p>
-      <p><strong>Trong game thật:</strong> Butterfly <code>Ám Sát</code> — "kẻ địch có lượng máu thấp nhất (ưu tiên tướng)". Lorion passive — "kẻ địch ít máu nhất trong phạm vi lân cận". Đây là một trong những strategy phổ biến nhất của Liên Quân, vì nó map trực tiếp với mục đích "kết liễu kẻ yếu".</p>
+      <p><strong>Rule:</strong> pick the enemy with the lowest current HP.</p>
+      <p><strong>In the genre:</strong> this is one of the most common MOBA patterns, because it maps directly to "execute the weak one". Assassin archetypes use it for finishers; mage passives use it to trigger on the lowest-HP enemy in range; carry heroes with execute-style damage use it as their targeting rule.</p>
 
       <pre><code class="language-java">public class LowestHP implements TargetSelector {
     @Override
@@ -127,30 +127,30 @@
     }
 }</code></pre>
 
-      <p><strong>Đặc điểm:</strong> thuật toán phụ thuộc <em>state runtime</em> của enemy (HP hiện tại), không phải vị trí. Vì HP thay đổi mỗi tick, hai lần gọi liên tiếp có thể trả về hai mục tiêu khác nhau.</p>
-      <p><strong>So sánh nhanh với <code>NearestEnemy</code>:</strong> cùng một interface <code>TargetSelector</code>, nhưng input quan trọng khác nhau (vị trí vs HP), output logic khác nhau. <code>Hero</code> không cần biết.</p>
+      <p><strong>Characteristic:</strong> the algorithm depends on the enemy's <em>runtime state</em> (current HP), not position. Since HP changes every tick, two consecutive calls can return two different targets.</p>
+      <p><strong>Quick comparison with <code>NearestEnemy</code>:</strong> same <code>TargetSelector</code> interface, but the important inputs differ (position vs HP), and the output logic differs. <code>Hero</code> does not need to know.</p>
     </section>
 
     <section>
-      <h2>Phạm vi của Target Selector — chỗ Strategy dừng lại</h2>
-      <p>Trong Liên Quân thật còn có các cơ chế chọn mục tiêu khác: khóa mục tiêu (target lock), đánh dấu rồi đánh (Keera, Quillen), skillshot direction (Yorn). Nhưng những cơ chế đó <em>không thuộc về <code>TargetSelector</code></em> — chúng là logic riêng của từng skill, không phải quy tắc auto-target toàn cục.</p>
-      <p>Đây là một bài học quan trọng về Strategy pattern: <strong>không phải cái gì "chọn mục tiêu" cũng nên dùng cùng một Strategy interface</strong>. Mỗi skill có thể cần input khác (hướng bắn, mark state, ...) — input đó không vừa interface <code>select(attacker, enemies)</code>. Ép nó vào cùng interface sẽ làm interface bị phình ra và mất tính gọn.</p>
+      <h2>Scope of Target Selector — where Strategy stops</h2>
+      <p>The genre also has other targeting mechanics: target lock, mark-then-strike, skillshot direction. But those <em>do not belong to <code>TargetSelector</code></em> — they are per-skill logic, not global auto-target rules.</p>
+      <p>This is an important lesson about the Strategy pattern: <strong>not everything that "picks a target" should share the same Strategy interface</strong>. Each skill can need different inputs (cast direction, mark state, …) — inputs that do not fit <code>select(attacker, enemies)</code>. Forcing them into the same interface would bloat it and lose the pattern's cleanliness.</p>
 
-      <h3>Edge cases của 2 strategy hiện có</h3>
-      <p><strong>Danh sách rỗng:</strong> cả <code>NearestEnemy</code> và <code>LowestHP</code> đều có <code>if (enemies.isEmpty()) return null;</code> ở đầu hàm. Caller (<code>Hero</code>) phải xử lý <code>null</code> — bỏ qua đòn đánh là hợp lý.</p>
-      <p><strong>Tie-break (khoảng cách bằng nhau):</strong> điều kiện <code>d &lt; minDistance</code> trong <code>NearestEnemy</code> dùng strict less-than. Nếu hai địch cùng khoảng cách, enemy nào xuất hiện <em>trước</em> trong list thắng. Hành vi này ổn định nhưng phụ thuộc thứ tự list — không phải random. Muốn random khi tie, phải sửa implementation.</p>
-      <p><strong>Tie-break (cùng HP):</strong> tương tự, <code>LowestHP</code> với <code>hp &lt; minHp</code> cũng chọn enemy đầu tiên trong list khi HP bằng nhau. Trong game thật HP thường là số lớn nên tie hiếm, nhưng vẫn cần biết để debug hoặc viết test.</p>
+      <h3>Edge cases of the 2 existing strategies</h3>
+      <p><strong>Empty list:</strong> both <code>NearestEnemy</code> and <code>LowestHP</code> start with <code>if (enemies.isEmpty()) return null;</code>. The caller (<code>Hero</code>) must handle <code>null</code> — skipping the attack is reasonable.</p>
+      <p><strong>Tie-break (equal distance):</strong> the <code>d &lt; minDistance</code> condition in <code>NearestEnemy</code> uses strict less-than. If two enemies are at equal distance, the one that appears <em>first</em> in the list wins. This is a stable behavior but list-order-dependent — not random. If you want random on tie, the implementation must change.</p>
+      <p><strong>Tie-break (equal HP):</strong> the same applies — <code>LowestHP</code> with <code>hp &lt; minHp</code> also picks the first enemy in the list on equal HP. In real gameplay HP is usually a large number so ties are rare, but knowing the policy matters for debugging and for writing tests.</p>
 
-      <p class="caption">Bài học: Strategy pattern giải quyết "thuật toán nào" nhưng không ép "policy tie-break" — đó là design decision của từng ConcreteStrategy, và mỗi implementation có thể chọn khác nhau.</p>
+      <p class="caption">Lesson: the Strategy pattern answers "which algorithm" but does not impose "which tie-break policy" — that is a design decision of each ConcreteStrategy, and each implementation may choose differently.</p>
     </section>
 
     <section class="quiz">
-      <h2>Quiz — kiểm tra hiểu</h2>
-      <p>Trả lời trước khi mở đáp án. Mỗi câu có 4 lựa chọn cùng độ dài để không bị hint qua format.</p>
+      <h2>Quiz — check your understanding</h2>
+      <p>Answer before opening the answers. Each question has 4 same-length options so the format does not give away the right answer.</p>
 
       <ol>
         <li>
-          <p><strong>Câu 1.</strong> Class nào giữ reference tới <code>Strategy</code>?</p>
+          <p><strong>Question 1.</strong> Which class holds the reference to <code>Strategy</code>?</p>
           <ol class="options">
             <li>Subject</li>
             <li>Context</li>
@@ -158,88 +158,88 @@
             <li>Factory</li>
           </ol>
           <details>
-            <summary>Đáp án</summary>
-            <div class="answer">B) Context — đúng vai trò của Context trong GoF: giữ reference, ủy quyền cho Strategy.</div>
+            <summary>Answer</summary>
+            <div class="answer">B) Context — the Context's role in GoF is to hold the reference and delegate to Strategy.</div>
           </details>
         </li>
 
         <li>
-          <p><strong>Câu 2.</strong> <code>LowestHP</code> phụ thuộc thông tin nào của enemy?</p>
+          <p><strong>Question 2.</strong> Which enemy information does <code>LowestHP</code> depend on?</p>
           <ol class="options">
-            <li>Vị trí hiện tại</li>
-            <li>Máu hiện tại</li>
-            <li>Tướng hay lính</li>
-            <li>Role của enemy</li>
+            <li>Current position</li>
+            <li>Current HP</li>
+            <li>Hero or minion flag</li>
+            <li>Enemy's role</li>
           </ol>
           <details>
-            <summary>Đáp án</summary>
-            <div class="answer">B) Máu hiện tại — <code>LowestHP</code> đọc <code>getCurrentHp()</code> và so sánh min.</div>
+            <summary>Answer</summary>
+            <div class="answer">B) Current HP — <code>LowestHP</code> reads <code>getCurrentHp()</code> and compares min.</div>
           </details>
         </li>
 
         <li>
-          <p><strong>Câu 3.</strong> Cả <code>NearestEnemy</code> và <code>LowestHP</code> trả về gì khi <code>enemies.isEmpty()</code>?</p>
+          <p><strong>Question 3.</strong> What do both <code>NearestEnemy</code> and <code>LowestHP</code> return when <code>enemies.isEmpty()</code>?</p>
           <ol class="options">
-            <li>Trả null.</li>
-            <li>Throw error.</li>
-            <li>Trả rỗng.</li>
-            <li>Chọn bừa.</li>
+            <li>Return null.</li>
+            <li>Throw an error.</li>
+            <li>Return empty.</li>
+            <li>Pick arbitrarily.</li>
           </ol>
           <details>
-            <summary>Đáp án</summary>
-            <div class="answer">A) Trả null — cả hai implementation đều có <code>if (enemies.isEmpty()) return null;</code> ở đầu hàm. Caller (Hero) kiểm tra null trước khi đánh.</div>
+            <summary>Answer</summary>
+            <div class="answer">A) Return null — both implementations have <code>if (enemies.isEmpty()) return null;</code> at the top. The caller (Hero) checks for null before attacking.</div>
           </details>
         </li>
 
         <li>
-          <p><strong>Câu 4.</strong> Khi hai địch cùng khoảng cách từ attacker, <code>NearestEnemy</code> chọn ai?</p>
+          <p><strong>Question 4.</strong> When two enemies are at the same distance from the attacker, which one does <code>NearestEnemy</code> pick?</p>
           <ol class="options">
-            <li>Enemy đầu list.</li>
-            <li>Enemy cuối list.</li>
-            <li>Enemy random list.</li>
-            <li>Enemy ở giữa list.</li>
+            <li>First enemy in list.</li>
+            <li>Last enemy in list.</li>
+            <li>Random enemy in list.</li>
+            <li>Middle enemy in list.</li>
           </ol>
           <details>
-            <summary>Đáp án</summary>
-            <div class="answer">A) Enemy đầu list — điều kiện <code>d &lt; minDistance</code> (strict less-than) giữ enemy đầu tiên; enemy sau không thắng nếu cùng khoảng cách. Đây là hành vi ổn định nhưng không phải random.</div>
+            <summary>Answer</summary>
+            <div class="answer">A) First enemy in list — the <code>d &lt; minDistance</code> (strict less-than) keeps the first enemy; a later enemy does not win on equal distance. Stable behavior, but not random.</div>
           </details>
         </li>
 
         <li>
-          <p><strong>Câu 5.</strong> Logic "marked target" của Keera có nên dùng cùng <code>TargetSelector</code> interface không?</p>
+          <p><strong>Question 5.</strong> Should a per-ability "marked target" mechanic share the <code>TargetSelector</code> interface?</p>
           <ol class="options">
-            <li>Có, cùng interface.</li>
-            <li>Không, khác interface.</li>
-            <li>Có, thêm method.</li>
-            <li>Không, không pattern.</li>
+            <li>Yes, same interface.</li>
+            <li>No, different interface.</li>
+            <li>Yes, add a method.</li>
+            <li>No, no pattern at all.</li>
           </ol>
           <details>
-            <summary>Đáp án</summary>
-            <div class="answer">B) Không, khác interface — marked target là logic riêng của skill Keera, không phải quy tắc auto-target toàn cục. Ép vào <code>TargetSelector</code> sẽ làm interface bị phình và mất gọn.</div>
+            <summary>Answer</summary>
+            <div class="answer">B) No, different interface — a marked-target mechanic is per-skill logic, not a global auto-target rule. Forcing it into <code>TargetSelector</code> would bloat the interface and lose its cleanliness.</div>
           </details>
         </li>
       </ol>
     </section>
 
     <section class="source">
-      <h2>Đọc thêm</h2>
-      <p>Primary source gốc cho pattern này là sách <em>Design Patterns: Elements of Reusable Object-Oriented Software</em> của Gamma, Helm, Johnson, Vlissides (Addison-Wesley, 1994), Chương 5. Tóm tắt hiện đại và trực quan nhất ở <a href="https://refactoring.guru/design-patterns/strategy">Refactoring Guru — Strategy</a>. Cả hai đều dùng ví dụ không phải game; việc mapping sang Liên Quân là phần của bạn.</p>
-      <p>Map sang game thật: <a href="../../.scratch/research/target-selection-options.md">research note về target selection của Liên Quân</a> trong repo này (primary source: patch notes và mô tả skill trên <code>lienquan.garena.vn</code>).</p>
+      <h2>Further reading</h2>
+      <p>The canonical primary source for this pattern is the book <em>Design Patterns: Elements of Reusable Object-Oriented Software</em> by Gamma, Helm, Johnson, Vlissides (Addison-Wesley, 1994), Chapter 5. The most accessible modern summary is at <a href="https://refactoring.guru/design-patterns/strategy">Refactoring Guru — Strategy</a>. Both use non-game examples; mapping to MOBA combat is your job.</p>
+      <p>Genre mapping: <a href="../../.scratch/research/target-selection-options.md">research note on MOBA target selection</a> in this repo (primary source: patch notes and skill descriptions from the publisher).</p>
     </section>
 
     <section class="followup">
-      <h2>Câu hỏi? Hỏi lại agent</h2>
-      <p>Agent là gia sư của bạn trong workspace này. Bất kỳ chỗ nào trong lesson chưa rõ — kể cả một dòng code, một từ tiếng Anh, hay một khái niệm — cứ hỏi. Đặc biệt:</p>
+      <h2>Questions? Ask the agent</h2>
+      <p>The agent is your tutor in this workspace. Anywhere in the lesson is unclear — even a single line of code, an English word, or a concept — just ask. Especially:</p>
       <ul>
-        <li>Nếu chưa hiểu tại sao <code>TargetSelector</code> là <em>interface</em> chứ không phải <em>abstract class</em> — hỏi.</li>
-        <li>Nếu muốn biết vì sao ta không dùng <em>inheritance</em> (<code>AggressiveHero extends Hero</code>) — hỏi.</li>
-        <li>Nếu muốn thử viết <em>fallback strategy</em>: <code>NearestEnemy</code> chuyển sang <code>LowestHP</code> khi <code>enemies.isEmpty()</code> — bảo agent hướng dẫn.</li>
-        <li>Nếu muốn vẽ UML class diagram cho 2 strategy này bằng PlantUML — bảo agent viết cho.</li>
+        <li>If you do not yet understand why <code>TargetSelector</code> is an <em>interface</em> rather than an <em>abstract class</em> — ask.</li>
+        <li>If you want to know why we do not use <em>inheritance</em> (<code>AggressiveHero extends Hero</code>) — ask.</li>
+        <li>If you want to try writing a <em>fallback strategy</em>: <code>NearestEnemy</code> switches to <code>LowestHP</code> when <code>enemies.isEmpty()</code> — ask the agent to walk you through it.</li>
+        <li>If you want to draw a UML class diagram for these 2 strategies in PlantUML — ask the agent to write it.</li>
       </ul>
     </section>
 
     <footer>
-      <p>Lesson 0001 · Strategy Pattern · Liên Quân Mobile redesign · workspace tại <code>/home/ttran/Projects/lienquanmobileuml/</code></p>
+      <p>Lesson 0001 · Strategy Pattern · MOBA combat redesign · workspace at <code>/Users/ttran/IdeaProjects/lienquanmobileuml/</code></p>
     </footer>
   </article>
 </body>
