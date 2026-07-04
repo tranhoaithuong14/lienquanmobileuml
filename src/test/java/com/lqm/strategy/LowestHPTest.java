@@ -16,10 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  */
 class LowestHPTest {
 
-    /**
-     * Slice 1 — GREEN.
-     * Quy tắc: danh sách rỗng → null.
-     */
     @Test
     void returnsNullWhenEnemiesListIsEmpty() {
         LowestHP selector = new LowestHP();
@@ -30,10 +26,6 @@ class LowestHPTest {
         assertNull(result);
     }
 
-    /**
-     * Slice 2 — GREEN.
-     * Quy tắc: 1 enemy → enemy đó.
-     */
     @Test
     void returnsTheOnlyEnemyWhenListHasOneElement() {
         LowestHP selector = new LowestHP();
@@ -45,13 +37,6 @@ class LowestHPTest {
         assertSame(lone, result);
     }
 
-    /**
-     * Slice 3 — GREEN.
-     * Quy tắc: trong list nhiều enemy, chọn enemy có HP hiện tại thấp nhất.
-     *
-     * Test xếp "Healthy" (HP 100) TRƯỚC "Wounded" (HP 30) để impl sai (return first) chắc chắn fail.
-     * Position giống nhau để loại trừ yếu tố khoảng cách — verify LowestHP đúng là dựa trên HP.
-     */
     @Test
     void returnsLowestHpEnemyWhenMultipleAreInRange() {
         LowestHP selector = new LowestHP();
@@ -62,5 +47,24 @@ class LowestHPTest {
         Enemy result = selector.select(attacker, List.of(healthy, wounded));
 
         assertSame(wounded, result);
+    }
+
+    /**
+     * Cycle mới (Candidate 2 fix): verify float HP comparison chính xác.
+     *
+     * Hai enemy có HP float gần nhau nhưng khác nhau — chọn đúng cái thấp hơn.
+     * Với int HP (cũ): cả 2 round về 99 → tie-break sai.
+     * Với float HP (mới): 99.4f < 99.6f → chọn đúng.
+     */
+    @Test
+    void fractionalHpComparisonPicksTheTrueLower() {
+        LowestHP selector = new LowestHP();
+        Enemy attacker = TestEnemy.at(new Position(0, 0), 100, "Attacker");
+        Enemy a = TestEnemy.at(new Position(5, 0), 99.6f, "A");
+        Enemy b = TestEnemy.at(new Position(5, 0), 99.4f, "B");
+
+        Enemy result = selector.select(attacker, List.of(a, b));
+
+        assertSame(b, result, "99.4f < 99.6f — must pick B regardless of list order");
     }
 }

@@ -68,3 +68,15 @@ _Avoid_: restore, recover
 **respawn**:
 Phương thức Hero hồi sinh. Set `active=true` và `currentHp = maxHp`. Match game thật: trigger bởi respawn timer bên ngoài, không phải từ heal.
 _Avoid_: revive, spawnAgain
+
+## Geometry (added 2026-07-04)
+
+**distanceTo**:
+Method trên `Position` trả khoảng cách Euclidean đến một `Position` khác. Symmetric, trả 0 khi cùng vị trí. Math thuộc về Position, không phải của strategy nào.
+_Avoid_: getDistance, euclideanDistance
+
+## Strategy helpers (added 2026-07-04)
+
+**MinSelector**:
+Static helper trong package `strategy`. Method `minBy(List<T>, ToDoubleFunction<T>)` trả phần tử có score nhỏ nhất. Được dùng bởi NearestEnemy (scorer = distanceTo) và LowestHP (scorer = getCurrentHp). Tie-break: strict less-than → phần tử đầu thắng.
+_Avoid_: minByScorer, findMin

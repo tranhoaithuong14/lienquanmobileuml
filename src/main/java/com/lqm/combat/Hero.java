@@ -15,6 +15,8 @@ import java.util.List;
  * - respawn(): set active=true, currentHp=maxHp
  *
  * Cũng là Enemy — implement Enemy interface để truyền `this` làm attacker.
+ *
+ * getCurrentHp() trả float trực tiếp — không qua Math.round (đã xóa type leak).
  */
 public class Hero implements Enemy {
 
@@ -37,7 +39,7 @@ public class Hero implements Enemy {
         this.targetSelector = targetSelector;
     }
 
-    /** Cycle 1-3 GREEN: giảm currentHp, clamp tại 0, set active=false nếu HP ≤ 0. */
+    /** Giảm currentHp theo amount (phải ≥ 0). Clamp tại 0. Set active=false nếu currentHp ≤ 0. */
     public void takeDamage(float amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("takeDamage amount must be >= 0, got " + amount);
@@ -48,7 +50,7 @@ public class Hero implements Enemy {
         }
     }
 
-    /** Cycle 4-6 GREEN: tăng currentHp, clamp tại maxHp, no-op nếu !active. */
+    /** Tăng currentHp theo amount (phải ≥ 0). Clamp tại maxHp. No-op nếu !active. */
     public void heal(float amount) {
         if (amount < 0) {
             throw new IllegalArgumentException("heal amount must be >= 0, got " + amount);
@@ -59,13 +61,13 @@ public class Hero implements Enemy {
         currentHp = Math.min(maxHp, currentHp + amount);
     }
 
-    /** Cycle 7 GREEN: set active=true, currentHp=maxHp. */
+    /** Hồi sinh. Set active=true, currentHp=maxHp. */
     public void respawn() {
         active = true;
         currentHp = maxHp;
     }
 
-    /** Cycle 3 GREEN: trả null nếu !active, ngược lại delegate cho TargetSelector. */
+    /** Ủy quyền cho TargetSelector. Trả null nếu !active hoặc selector trả null. */
     public Enemy selectTarget(List<Enemy> enemies) {
         if (!active) {
             return null;
@@ -73,7 +75,6 @@ public class Hero implements Enemy {
         return targetSelector.select(this, enemies);
     }
 
-    /** Cycle 3 GREEN. */
     public boolean isAlive() {
         return active;
     }
@@ -84,12 +85,7 @@ public class Hero implements Enemy {
     }
 
     @Override
-    public int getCurrentHp() {
-        return Math.round(currentHp);
-    }
-
-    /** Raw float HP — dùng cho test chính xác. */
-    public float getCurrentHpExact() {
+    public float getCurrentHp() {
         return currentHp;
     }
 
