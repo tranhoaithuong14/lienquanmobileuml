@@ -15,10 +15,12 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 class HeroTest {
 
     private static Attribute minimalAttribute(float hp) {
-        return new Attribute(
-                hp, 0f, 0f, 0f, 0f, CombatResource.MANA, 0f,
-                1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE, HeroRole.WARRIOR);
+        return Attribute.builder()
+                .basic(Basic.of(hp, 0f, 0f, 0f, 0f, CombatResource.MANA, 0f))
+                .offensive(Offensive.of(1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f))
+                .attackRange(AttackRange.MELEE)
+                .role(HeroRole.WARRIOR)
+                .build();
     }
 
     @Test

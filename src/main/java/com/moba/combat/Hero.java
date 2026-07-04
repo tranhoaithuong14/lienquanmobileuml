@@ -19,7 +19,7 @@ public class Hero implements Enemy {
         this.name = name;
         this.position = position;
         this.attribute = attribute;
-        this.vitals = new CombatStats(attribute.hp());
+        this.vitals = new CombatStats(attribute.basic().hp());
         this.targetSelector = targetSelector;
     }
 
