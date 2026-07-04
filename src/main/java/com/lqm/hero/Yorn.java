@@ -16,27 +16,12 @@ public final class Yorn {
 
     private static final ThuocTinhGoc THUOC_TINH = new ThuocTinhGoc(
             ThuocTinhCoBan.cua(
-                    3582f,   /* mauToiDa             */  // UI hang 1 trai:  "Mau 3582"
-                    174f,    /* congVatLy            */  // UI hang 1 giua:  "Cong vat ly 174"
-                    0f,      /* congPhep             */  // UI hang 1 phai:  "Cong phep 0"
-                    140f,    /* giap                 */  // UI hang 2 trai:  "Giap 140 | 0%"
-                    80f,     /* giapPhep             */  // UI hang 2 giua:  "Giap phep 80 | 0%"
-                    440f     /* nangLuongToiDa       */  // UI hang 2 phai:  "Nang luong toi da 440"
+                    3582f, 174f, 0f, 140f, 80f, 440f
             ),
             ThuocTinhTanCong.cua(
-                    360f,    /* tocChay              */  // UI tan cong h1 trai:  "Toc chay 360.0"
-                    0f,      /* xuyenGiap            */  // UI tan cong h1 giua:  "Xuyen giap 0"
-                    0f,      /* xuyenGiapPhep        */  // UI tan cong h1 phai:  "Xuyen giap phep 0"
-                    0f,      /* tocDanhCong          */  // UI tan cong h2 trai:  "Toc danh + 0%"
-                    0f,      /* tyLeChiMang          */  // UI tan cong h2 giua:  "Ty le chi mang 0%"
-                    2.00f,   /* satThuongChiMang     */  // UI tan cong h2 phai:  "Sat thuong chi mang 200% (AoV 2.0x)"
-                    0f,      /* hutMau               */  // UI tan cong h3 trai:  "Hut mau 0%"
-                    0f,      /* hutMauPhep           */  // UI tan cong h3 giua:  "Hut mau phep 0%"
-                    0f,      /* giamHoiChieu         */  // UI tan cong h3 phai:  "Giam hoi chieu 0%"
-                    0f,      /* xuyenGiapPhanTram    */
-                    0f       /* xuyenGiapPhepPhanTram*/
+                    360f, 0f, 0f, 0f, 0f, 2.00f, 0f, 0f, 0f, 0f, 0f
             ),
-            TamDanh.DANHXHA,                                  // UI duoi: "Tam danh Danh xa"
+            TamDanh.DANHXHA,
             GioiHanKhachHang.LQMN
     );
 
