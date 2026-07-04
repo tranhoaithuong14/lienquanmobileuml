@@ -1,126 +1,114 @@
 package com.lqm.hero;
 
-import com.lqm.combat.AttackRange;
-import com.lqm.combat.BaseStats;
-import com.lqm.combat.Hero;
-import com.lqm.combat.Position;
-import com.lqm.strategy.LowestHP;
+import com.lqm.combat.TamDanh;
+import com.lqm.combat.ThuocTinhGoc;
+import com.lqm.combat.Tuong;
+import com.lqm.combat.ViTri;
+import com.lqm.strategy.HPThapNhat;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Pin field structure của Yorn từ screenshot Liên Quân Mobile (xem ADR-0003).
- *
- * Mỗi test tương ứng MỘT dòng trên màn hình chi tiết tướng: nếu Garena thay đổi 1 stat,
- * đúng 1 test fail — dễ truy nguyên khi balance patch khác số liệu.
- *
- * Cảnh báo: số liệu giữa các region/patch khác nhau (xem ADR-0003 R1 cross-check). Khi nguồn
- * chính thức thay đổi, cập nhật Yorn.stats() — không sửa test.
- */
 class YornTest {
 
     @Test
-    void yornMaxHpMatchesSheet() {
-        assertEquals(3582f, Yorn.stats().maxHp());
+    void yornMauToiDaKhopSheet() {
+        assertEquals(3582f, Yorn.thuocTinh().mauToiDa());
     }
 
     @Test
-    void yornMaxManaMatchesSheet() {
-        assertEquals(440f, Yorn.stats().maxMana());
+    void yornNangLuongToiDaKhopSheet() {
+        assertEquals(440f, Yorn.thuocTinh().nangLuongToiDa());
     }
 
     @Test
-    void yornAttackDamageMatchesSheet() {
-        assertEquals(174f, Yorn.stats().attackDamage());
+    void yornCongVatLyKhopSheet() {
+        assertEquals(174f, Yorn.thuocTinh().congVatLy());
     }
 
     @Test
-    void yornAbilityPowerMatchesSheet() {
-        assertEquals(0f, Yorn.stats().abilityPower());
+    void yornCongPhepKhopSheet() {
+        assertEquals(0f, Yorn.thuocTinh().congPhep());
     }
 
     @Test
-    void yornArmorMatchesSheet() {
-        assertEquals(140f, Yorn.stats().armor());
+    void yornGiapKhopSheet() {
+        assertEquals(140f, Yorn.thuocTinh().giap());
     }
 
     @Test
-    void yornMagicDefenseMatchesSheet() {
-        assertEquals(80f, Yorn.stats().magicDefense());
+    void yornGiapPhepKhopSheet() {
+        assertEquals(80f, Yorn.thuocTinh().giapPhep());
     }
 
     @Test
-    void yornMovementSpeedMatchesSheet() {
-        assertEquals(360f, Yorn.stats().movementSpeed());
+    void yornTocChayKhopSheet() {
+        assertEquals(360f, Yorn.thuocTinh().tocChay());
     }
 
     @Test
-    void yornAttackSpeedBonusMatchesSheet() {
-        assertEquals(0f, Yorn.stats().attackSpeedBonus());
+    void yornTocDanhCongKhopSheet() {
+        assertEquals(0f, Yorn.thuocTinh().tocDanhCong());
     }
 
     @Test
-    void yornArmorPenMatchesSheet() {
-        BaseStats s = Yorn.stats();
-        assertEquals(0f, s.armorPenFlat());
-        assertEquals(0f, s.armorPenPct());
+    void yornXuyenGiapKhopSheet() {
+        ThuocTinhGoc s = Yorn.thuocTinh();
+        assertEquals(0f, s.xuyenGiap());
+        assertEquals(0f, s.xuyenGiapPhanTram());
     }
 
     @Test
-    void yornMagicPenMatchesSheet() {
-        BaseStats s = Yorn.stats();
-        assertEquals(0f, s.magicPenFlat());
-        assertEquals(0f, s.magicPenPct());
+    void yornXuyenGiapPhepKhopSheet() {
+        ThuocTinhGoc s = Yorn.thuocTinh();
+        assertEquals(0f, s.xuyenGiapPhep());
+        assertEquals(0f, s.xuyenGiapPhepPhanTram());
     }
 
     @Test
-    void yornCritChanceMatchesSheet() {
-        assertEquals(0f, Yorn.stats().critChance());
+    void yornTyLeChiMangKhopSheet() {
+        assertEquals(0f, Yorn.thuocTinh().tyLeChiMang());
     }
 
     @Test
-    void yornCritDamageMatchesSheet() {
-        assertEquals(2.00f, Yorn.stats().critDamage());
+    void yornSatThuongChiMangKhopSheet() {
+        assertEquals(2.00f, Yorn.thuocTinh().satThuongChiMang());
     }
 
     @Test
-    void yornLifeStealMatchesSheet() {
-        assertEquals(0f, Yorn.stats().lifeSteal());
+    void yornHutMauKhopSheet() {
+        assertEquals(0f, Yorn.thuocTinh().hutMau());
     }
 
     @Test
-    void yornSpellVampMatchesSheet() {
-        assertEquals(0f, Yorn.stats().spellVamp());
+    void yornHutMauPhepKhopSheet() {
+        assertEquals(0f, Yorn.thuocTinh().hutMauPhep());
     }
 
     @Test
-    void yornCooldownReductionMatchesSheet() {
-        assertEquals(0f, Yorn.stats().cooldownReduction());
+    void yornGiamHoiChieuKhopSheet() {
+        assertEquals(0f, Yorn.thuocTinh().giamHoiChieu());
     }
 
     @Test
-    void yornAttackRangeIsRanged() {
-        // Sheet shows "Đánh xa" → RANGED enum.
-        assertEquals(AttackRange.RANGED, Yorn.stats().attackRange());
+    void yornTamDanhLaDanhXa() {
+        assertEquals(TamDanh.DANHXHA, Yorn.thuocTinh().tamDanh());
     }
 
-    /** Hero Yorn default: composition gắn đúng stats + selector + name. */
     @Test
-    void yornCreateComposesCorrectly() {
-        Hero yorn = Yorn.create();
+    void yornTaoHopThanhPhanDung() {
+        Tuong yorn = Yorn.tao();
 
-        assertEquals(Yorn.NAME, yorn.getName());
-        assertEquals(Yorn.stats(), yorn.getBaseStats());
-        assertEquals(3582f, yorn.getCurrentHp());
-        assertEquals(new Position(0, 0), yorn.getPosition());
+        assertEquals(Yorn.TEN, yorn.layTen());
+        assertEquals(Yorn.thuocTinh(), yorn.layThuocTinhGoc());
+        assertEquals(3582f, yorn.layMauHienTai());
+        assertEquals(new ViTri(0, 0), yorn.layViTri());
     }
 
-    /** Yorn.create(position, selector) cho phép override vị trí và TargetSelector. */
     @Test
-    void yornCreateAcceptsPositionAndSelector() {
-        Hero yorn = Yorn.create(new Position(10, 20), new LowestHP());
+    void yornTaoChoPhepGhiDeViTriVaBoChon() {
+        Tuong yorn = Yorn.tao(new ViTri(10, 20), new HPThapNhat());
 
-        assertEquals(new Position(10, 20), yorn.getPosition());
+        assertEquals(new ViTri(10, 20), yorn.layViTri());
     }
 }
