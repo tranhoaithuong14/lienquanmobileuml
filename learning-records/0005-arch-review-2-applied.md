@@ -6,66 +6,66 @@ active
 
 ## Evidence
 
-Sau Hero deepening (LR-0004), đã chạy architecture review #2 và apply cả 3 candidates trong report:
+After Hero deepening (LR-0004), ran architecture review #2 and applied all 3 candidates in the report:
 
 | # | Candidate | Status |
 |---|-----------|--------|
-| 2 | Enemy.getCurrentHp int → float | ✅ Done |
-| 1 | Position.distanceTo | ✅ Done |
-| 3 | MinSelector helper | ✅ Done (dù là Speculative) |
+| 2 | `Enemy.getCurrentHp` int → float | ✅ Done |
+| 1 | `Position.distanceTo` | ✅ Done |
+| 3 | `MinSelector` helper | ✅ Done (Speculative) |
 
-## Decisions đã chốt (từ review + apply)
+## Decisions pinned (from review + apply)
 
-### Candidate 2: Enemy.getCurrentHp int → float
+### Candidate 2: `Enemy.getCurrentHp` int → float
 
-- **Trigger:** Hero deepening chọn float HP, nhưng Enemy interface vẫn int → type leak.
-- **Change:** `Enemy.getCurrentHp()` returns `float`. Hero trả float trực tiếp (xóa `Math.round`). Xóa `getCurrentHpExact()`.
-- **Blast radius:** Enemy, Hero, TestEnemy, HeroTest, LowestHPTest, NearestEnemyTest (literal updates).
-- **Test mới:** `LowestHPTest.fractionalHpComparisonPicksTheTrueLower` — verify 99.4f vs 99.6f chọn đúng 99.4f.
+- **Trigger:** Hero deepening picked float HP, but `Enemy` interface still used int → type leak.
+- **Change:** `Enemy.getCurrentHp()` returns `float`. Hero returns float directly (removed `Math.round`). Deleted `getCurrentHpExact()`.
+- **Blast radius:** Enemy, Hero, EnemyStub, HeroTest, LowestHPTest, NearestEnemyTest (literal updates).
+- **New test:** `LowestHPTest.fractionalHpComparisonPicksTheTrueLower` — verify 99.4f vs 99.6f picks the right one.
 
-### Candidate 1: Position.distanceTo
+### Candidate 1: `Position.distanceTo`
 
-- **Trigger:** NearestEnemy giữ private `distance(Position, Position)` static method. Math leak qua seam.
-- **Change:** Position có instance method `distanceTo(Position other)`. NearestEnemy gọi `attacker.getPosition().distanceTo(...)`.
-- **Test mới:** `PositionTest` (4 tests) — zero distance, Pythagorean 3-4-5, symmetry, negative coords.
+- **Trigger:** NearestEnemy held a private `distance(Position, Position)` static method. Math leaking across the seam.
+- **Change:** Position has an instance method `distanceTo(Position other)`. NearestEnemy calls `attacker.getPosition().distanceTo(...)`.
+- **New tests:** `PositionTest` (4 tests) — zero distance, Pythagorean 3-4-5, symmetry, negative coordinates.
 
-### Candidate 3: MinSelector helper
+### Candidate 3: `MinSelector` helper
 
-- **Trigger:** NearestEnemy và LowestHP duplicate vòng lặp "iterate + if < minScore".
-- **Change:** Thêm `MinSelector.minBy(List<T>, ToDoubleFunction<T>)`. NearestEnemy và LowestHP trở thành 1-liner.
-- **Test mới:** `MinSelectorTest` (3 tests) — LowestHP-style scoring, tie-break, single item.
+- **Trigger:** NearestEnemy and LowestHP duplicated the "iterate + if < minScore" loop.
+- **Change:** Added `MinSelector.minBy(List<T>, ToDoubleFunction<T>)`. NearestEnemy and LowestHP became 1-liners.
+- **New tests:** `MinSelectorTest` (3 tests) — LowestHP-style scoring, tie-break, single item.
 
 ## Implications
 
 ### Code shrinkage
 
 ```
-NearestEnemy: ~35 dòng → 21 dòng  (-40%)
-LowestHP:     ~30 dòng → 21 dòng  (-30%)
-Hero:         ~80 dòng → 95 dòng  (+15%, do thêm combat semantics + sửa int→float; không có rò rỉ logic)
-Position:     ~5 dòng → 20 dòng   (+300%, nhưng đó là deepening — gain locality)
+NearestEnemy: ~35 lines → 21 lines  (-40%)
+LowestHP:     ~30 lines → 21 lines  (-30%)
+Hero:         ~80 lines → 95 lines  (+15%, from added combat semantics + int→float fix; no logic leak)
+Position:     ~5 lines  → 20 lines  (+300%, but that is deepening — locality gain)
 ```
 
-Mặc dù tổng dòng code tăng (do thêm test files và MinSelector), **interface complexity giảm** — NearestEnemy và LowestHP giờ chỉ còn 1 method thân hàm 1-dòng. Đó là deepening thật.
+Even though total lines went up (added test files + MinSelector), **interface complexity decreased** — NearestEnemy and LowestHP are now 1-line method bodies. That is real deepening.
 
 ### Test coverage
 
-- Trước: 14 tests (3 NearestEnemy + 3 LowestHP + 8 Hero).
-- Sau: 22 tests (+4 Position + 3 MinSelector + 1 LowestHP fractional + 1 đã có ở Hero).
-- Mỗi module có seam test riêng. Position có pure-isolation tests (không qua strategy).
+- Before: 14 tests (3 NearestEnemy + 3 LowestHP + 8 Hero).
+- After: 22 tests (+4 Position + 3 MinSelector + 1 LowestHP fractional + 1 already in Hero).
+- Each module has its own seam test. Position has pure-isolation tests (not via a strategy).
 
 ### Locality gains
 
-- HP type decision: 1 chỗ (Enemy interface). Không còn bridge method ở Hero.
-- Distance math: 1 chỗ (Position). NearestEnemy pure algorithm.
-- Min selection: 1 chỗ (MinSelector). Strategies chỉ cần scorer.
+- HP type decision: 1 place (Enemy interface). No more bridge method in Hero.
+- Distance math: 1 place (Position). NearestEnemy is pure algorithm.
+- Min selection: 1 place (MinSelector). Strategies only need a scorer.
 
-### Friction còn lại (chưa address)
+### Friction remaining (not addressed)
 
-1. **Workspace không có CONTEXT.md** (chỉ có GLOSSARY.md). Engineering skills kỳ vọng CONTEXT.md + docs/adr/. GLOSSARY đã được dùng thay — flag này persist qua 2 reviews.
-2. **Hero exception paths chưa test:** `takeDamage(-x)` throw IllegalArgumentException, `heal(-x)` throw, constructor `maxHp <= 0` throw. None of these have tests.
-3. **Strategy 4+ chưa có:** nếu thêm FarthestEnemy, MostHP, v.v., MinSelector sẽ chứng minh giá trị. Hiện tại chỉ tiết kiệm được ~10 dòng duplicated.
+1. **Workspace has no CONTEXT.md** (only GLOSSARY.md). Engineering skills expect CONTEXT.md + docs/adr/. GLOSSARY is being used as a substitute — flag persists across 2 reviews.
+2. **Hero exception paths untested:** `takeDamage(-x)` throws IllegalArgumentException, `heal(-x)` throws, constructor `maxHp <= 0` throws. None have tests.
+3. **No 4th strategy yet:** if we add FarthestEnemy, MostHP, etc., MinSelector will pay for itself. Currently only ~10 duplicate lines saved.
 
-### Bài học về deepening
+### Lesson on deepening
 
-Khi một module được deepen (Hero thêm combat semantics), các module liên quan (Enemy interface) có thể bị "trượt" — interface không còn match với internal types. Đây là friction mới phát sinh SAU khi deepening. Cần re-review sau mỗi deepening quan trọng.
+When a module is deepened (Hero gains combat semantics), dependent modules (Enemy interface) may "drift" — the interface no longer matches internal types. This is friction that emerges AFTER deepening. Re-review after every significant deepening.

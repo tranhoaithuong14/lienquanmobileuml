@@ -1,4 +1,4 @@
-# 0001 — Strategy pattern cho Target Selection
+# 0001 — Strategy pattern for Target Selection
 
 ## Status
 
@@ -6,23 +6,23 @@ accepted
 
 ## Context
 
-Liên Quân Mobile có cơ chế auto-target khi Hero tự động đánh. Game thật có đúng 2 quy tắc auto-target toàn cục: Nearest (Tulen passive `Lôi điện`) và LowestHP (Butterfly `Ám Sát`, Lorion passive). Cần mô hình hóa bằng Java.
+A MOBA hero auto-attacks during combat. The genre defines exactly 2 global auto-target rules: Nearest (the classic "attack whoever is closest") and LowestHP (the "focus fire the weakest" rule common to assassins and finishers). We need to model this in Java.
 
 ## Decision
 
-Dùng **GoF Strategy pattern**: `TargetSelector` interface với method `select(Enemy attacker, List<Enemy> enemies)`. Concrete strategies: `NearestEnemy`, `LowestHP`. `Hero` (Context) giữ reference tới một `TargetSelector` và ủy quyền cho nó.
+Use the **GoF Strategy pattern**: a `TargetSelector` interface with a method `select(Enemy attacker, List<Enemy> enemies)`. Concrete strategies: `NearestEnemy`, `LowestHP`. `Hero` (the Context) holds a reference to a `TargetSelector` and delegates the work to it.
 
-Chỉ có **2 strategies** được implement. Per-ability logic (marked target, target lock, skillshot direction) được xác nhận là **out of scope** cho `TargetSelector` interface — chúng là logic riêng của từng skill, có input/output khác (hướng bắn, mark state, AoE radius), và ép vào `TargetSelector` sẽ làm pattern mất gọn.
+Only **2 strategies** are implemented. Per-ability logic (marked target, target lock, skillshot direction) is confirmed **out of scope** for the `TargetSelector` interface — those are per-skill concerns with their own input/output (cast direction, mark state, AoE radius) and forcing them into `TargetSelector` would break the pattern's cleanliness.
 
 ## Considered alternatives
 
-- **`if/else` chain trong `Hero`**: vi phạm Open/Closed. Mỗi lần thêm tướng mới → sửa `Hero`. Tests trở thành bulk.
-- **Inheritance** (`NearestEnemyHero extends Hero`): bùng nổ tổ hợp khi có N chiều biến thể (role × lane × strategy).
-- **`switch` trên enum**: vẫn vi phạm O/C. Thêm enum = sửa switch.
+- **`if/else` chain inside `Hero`**: violates Open/Closed. Adding a new hero → editing `Hero`. Tests become bulk.
+- **Inheritance** (`NearestEnemyHero extends Hero`): combinatorial explosion once there are N variation axes (role × lane × strategy).
+- **`switch` on enum**: still violates O/C. Adding an enum = editing the switch.
 
 ## Consequences
 
-- `TargetSelector` là public seam — strategies test được ở pure isolation (NearestEnemyTest, LowestHPTest).
-- Thêm strategy mới (FarthestEnemy, MostHP, ...) chỉ cần class mới + implement interface. Zero sửa `Hero`.
-- `Hero` chỉ giữ reference, ủy quyền. Strategy logic không leak vào Hero.
-- Khi `LowestHP` cần đọc float HP từ enemy, Enemy interface phải trả float (xem ADR-0002).
+- `TargetSelector` is a public seam — strategies can be tested in pure isolation (`NearestEnemyTest`, `LowestHPTest`).
+- Adding a new strategy (`FarthestEnemy`, `MostHP`, …) only needs a new class that implements the interface. Zero edits to `Hero`.
+- `Hero` only holds the reference and delegates. Strategy logic does not leak into `Hero`.
+- When `LowestHP` needs to read the float HP from an enemy, the `Enemy` interface must return `float` (see ADR-0002).

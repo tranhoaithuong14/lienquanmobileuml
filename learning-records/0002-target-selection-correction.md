@@ -1,4 +1,4 @@
-# 0002 — Correction: Target Selection chỉ có 2 quy tắc auto-target toàn cục
+# 0002 — Correction: Target Selection is only the 2 global auto-target rules
 
 ## Status
 
@@ -6,14 +6,14 @@ active
 
 ## Evidence
 
-User tuyên bố dứt khoát ở session 2026-07-04 sau khi đọc lesson 0001: *"game thật chỉ có 2 phương pháp lựa chọn mục tiêu là: Máu thấp nhất và Gần nhất"*. Khi được hỏi phạm vi, user xác nhận: "Target Selection" trong model của ta = **chỉ 2 quy tắc auto-target toàn cục**, không bao gồm per-ability logic (marked target, target lock, skillshot direction).
+User stated firmly in the 2026-07-04 session after reading lesson 0001: *"the game only has 2 target-selection rules: Lowest HP and Nearest"*. On scoping, the user confirmed: "Target Selection" in our model = **only the 2 global auto-target rules**, not per-ability logic (marked target, target lock, skillshot direction).
 
 ## Implications
 
-- Lesson 0001 đã được viết lại: bỏ `MarkedTarget` section, thay bằng "Phạm vi của Target Selector — chỗ Strategy dừng lại" (giải thích tại sao per-ability logic không vừa `TargetSelector` interface).
-- Quiz ở lesson 0001 đã được sửa: bỏ 2 câu về `MarkedTarget`, thay bằng câu về edge cases (empty list, tie-break) và câu về ranh giới pattern.
-- Research note `.scratch/research/target-selection-options.md` chứa nhiều finding về per-ability logic (marked, lock-on, skillshot) — đây là research hợp lệ về cơ chế game, nhưng KHÔNG map sang `TargetSelector` pattern. Đã thêm correction note ở đầu file.
-- Glossary đã đánh dấu `MarkedTarget` là "Out of scope" và giữ nguyên nhưng có note giải thích.
-- Đây là correction quan trọng: nếu ta tiếp tục model `MarkedTarget` như một ConcreteStrategy, ta sẽ ép một interface không phù hợp và dạy sai ranh giới của Strategy pattern.
-- Zone of proximal development shift: lesson tiếp theo nên tập trung sâu hơn vào 2 strategy hiện có (fallback strategy, tie-break policy, test coverage), chứ không mở rộng sang strategy thứ 3.
-- Khi dạy pattern tiếp theo (State, Observer, Command), bài học "đừng ép mọi thứ vào cùng interface" sẽ là nguyên lý nền — record này là evidence quan trọng cho nguyên lý đó.
+- Lesson 0001 was rewritten: the `MarkedTarget` section was removed, replaced with "Scope of Target Selector — where Strategy stops" (explaining why per-ability logic does not fit the `TargetSelector` interface).
+- Quiz in lesson 0001 was patched: the 2 `MarkedTarget` questions were removed, replaced with edge-case questions (empty list, tie-break) and a question about the pattern's boundaries.
+- The research note `.scratch/research/target-selection-options.md` contains many findings on per-ability logic (marked, lock-on, skillshot) — valid research on game mechanics, but it does NOT map to the `TargetSelector` pattern. A correction note was added at the top of the file.
+- The glossary marks `MarkedTarget` as "Out of scope" and retains it with an explanatory note.
+- This is an important correction: if we kept modeling `MarkedTarget` as a ConcreteStrategy, we would be forcing an ill-fitting interface and teaching the wrong boundary for the Strategy pattern.
+- Zone of proximal development shift: the next lesson should go deeper into the 2 existing strategies (fallback strategy, tie-break policy, test coverage) rather than expanding to a third.
+- When teaching subsequent patterns (State, Observer, Command), the lesson "don't force everything into the same interface" will be a foundational principle — this record is key evidence for that principle.

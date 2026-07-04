@@ -1,33 +1,35 @@
-# Mission: Strategy Pattern trong Java qua Liên Quân Mobile
+# Mission: Strategy Pattern in Java through a MOBA combat simulation
 
 ## Why
 
-Đang xây dựng một Java teaching artifact mô phỏng các hệ thống của Liên Quân Mobile — bắt đầu với **cơ chế chọn mục tiêu trong combat** của tướng. Strategy pattern là pattern đầu tiên trong GoF cần nắm vững, vì nó xuất hiện ở hầu hết các hệ con của game (AI, combat, item build, target selection). Khi hiểu Strategy, các pattern tiếp theo (State, Observer, Command) sẽ tự nhiên hơn nhiều.
+Building a Java teaching artifact that simulates MOBA combat systems — starting with the **hero auto-targeting** mechanic. The Strategy pattern is the first GoF pattern to master, because it shows up across most game subsystems (AI, combat, item builds, target selection). Once Strategy is internalized, subsequent patterns (State, Observer, Command) feel much more natural.
 
-Mục tiêu cuối cùng: đọc thành thạo code Strategy trong Java, nhận diện được chỗ nào trong game thật nên dùng Strategy, và viết được implementation sạch + UML rõ ràng cho teaching artifact.
+End goal: read Strategy pattern code in Java fluently, recognize where it should be applied in real game code, and write clean implementations with clear UML diagrams for the teaching artifact.
 
 ## Success looks like
 
-- Đọc code Java có Strategy pattern là nhận ra ngay ai là Context, ai là Strategy, ai là ConcreteStrategy — không cần đọc comment.
-- Tự viết được 4 concrete `TargetSelector` (`NearestEnemy`, `LowestHP`, `HeroPriority`, `MarkedTarget`) từ đầu, với interface + Context chuẩn GoF.
-- Giải thích được vì sao Strategy tốt hơn `if/else` hoặc `switch` trong trường hợp này, và vì sao tốt hơn `inheritance`.
-- Vẽ được class diagram (PlantUML) cho Strategy và áp dụng được vào một hệ con khác ngoài target selection.
+- Read any Java code that uses the Strategy pattern and immediately recognize the Context, Strategy, and ConcreteStrategy roles — without reading comments.
+- Write the 4 canonical `TargetSelector` implementations (`NearestEnemy`, `LowestHP`, `HeroPriority`, `MarkedTarget`) from scratch, with idiomatic interface + Context per GoF.
+- Explain why Strategy beats `if/else` chains or `switch` statements in this case, and why it beats inheritance.
+- Draw a class diagram (PlantUML) for Strategy and apply it to a different subsystem outside target selection.
 
 ## Constraints
 
-- Ngôn ngữ giảng dạy: **Tiếng Việt** (người dùng dùng tiếng Việt trong giao tiếp). Thuật ngữ kỹ thuật giữ tiếng Anh.
-- Mỗi lesson phải ngắn — working memory rất nhỏ. Ưu tiên 1 thắng rõ ràng mỗi lesson.
-- Code minh họa dùng Java 17+ (records, switch expressions) nếu giúp bài gọn hơn, nhưng không bắt buộc — ưu tiên cú pháp GoF kinh điển.
-- Mỗi lesson phải có retrieval practice (quiz) để build storage strength, không chỉ fluency.
+- **Communication language**: English (the user prefers it for the technical surface). Technical terms stay in English.
+- **Code language**: Java (locked in at the previous grilling session).
+- **UML tool**: PlantUML (locked in at the previous grilling session).
+- Each lesson must be short — working memory is tiny. One clear win per lesson.
+- Code samples use Java 17+ features (records, switch expressions) if they make examples tighter, but not required — prefer classic GoF syntax.
+- Each lesson must include retrieval practice (quiz) to build storage strength, not just fluency.
 
 ## Out of scope
 
-- Các GoF pattern khác (State, Observer, Command, ...) — chờ đến sau khi Strategy vững.
-- Toàn bộ scope Liên Quân (140 tướng, ranked, monetization, networking) — teaching artifact dùng game làm ngữ cảnh tương tác, không phải đích cuối.
-- UML nâng cao (sequence diagram, state machine) — để sau khi class diagram vững.
-- Lịch sử/tài liệu gốc của GoF 1994 đọc sâu — đủ để biết đó là primary source, không cần đọc hết.
+- Other GoF patterns (State, Observer, Command, …) — wait until Strategy is solid.
+- Full MOBA scope (140 heroes, ranked, monetization, networking) — the teaching artifact uses the genre as interaction context, not as the end goal.
+- Advanced UML (sequence diagrams, state machines) — defer until class diagrams are solid.
+- Deep reading of the 1994 GoF book — enough to recognize it as a primary source, not cover-to-cover.
 
 ## Open questions
 
-- User chưa nói rõ họ đã có nền OOP Java đến đâu (mới học Java, hay biết rồi mà chưa quen patterns). Cần xác nhận trong lesson đầu tiên để calibrate.
-- User dùng tiếng Việt — chưa rõ trình độ tiếng Anh đọc technical docs (Refactoring Guru, GoF book). Nếu kém thì cần resource tiếng Việt.
+- User's Java/OOP background is unknown (new to Java, or already familiar but not with patterns). Needs to be confirmed in the first lesson to calibrate.
+- The teaching context uses English now; whether the user is comfortable reading English technical docs (Refactoring Guru, GoF book) needs a check. If not, Vietnamese resources needed.

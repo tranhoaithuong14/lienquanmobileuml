@@ -2,24 +2,24 @@
 
 ## User preferences (confirmed)
 
-- **Ngôn ngữ giao tiếp**: Tiếng Việt. Thuật ngữ kỹ thuật giữ tiếng Anh.
-- **Ngôn ngữ code**: Java (đã chốt ở grilling session trước).
-- **Công cụ UML**: PlantUML (đã chốt ở grilling session trước).
-- **Pattern đang học**: Strategy — pattern GoF đầu tiên. Chưa mở rộng sang pattern khác.
-- **Bài toán cụ thể**: Target Selection trong combat Liên Quân.
+- **Communication language**: English (technical surface). Discussion can mix Vietnamese for informal chat.
+- **Code language**: Java (locked in at the previous grilling session).
+- **UML tool**: PlantUML (locked in at the previous grilling session).
+- **Pattern being learned**: Strategy — the first GoF pattern. Not yet expanding to other patterns.
+- **Specific problem**: Target Selection in MOBA combat.
 
-## Working assumptions (chưa xác nhận)
+## Working assumptions (not yet confirmed)
 
-- User có nền OOP Java cơ bản — biết class, interface, inheritance. Nếu sai cần quay lại calibrate.
-- User chưa học Strategy pattern lần nào. Nếu đã biết rồi, lesson sẽ cần nâng level.
-- User không có deadline cụ thể — tốc độ tự điều chỉnh theo phản hồi.
+- User has basic Java/OOP background — comfortable with classes, interfaces, inheritance. If wrong, recalibrate.
+- User has not studied the Strategy pattern before. If they have, the lesson needs to level up.
+- User has no specific deadline — pace adjusts based on feedback.
 
 ## Open questions
 
-- User tiếng Anh đọc technical docs ở mức nào? Có thể đọc Refactoring Guru không?
-- User thích đọc prose giải thích trước, hay thích xem code trước rồi giải thích sau?
-- Có muốn làm bài tập Java thật (chạy được, có test) hay chỉ đọc hiểu pattern?
+- How comfortable is the user reading English technical docs? Can they read Refactoring Guru comfortably?
+- Does the user prefer prose-first explanations or code-first?
+- Does the user want real working Java exercises (runnable, with tests) or just pattern comprehension?
 
 ## Known corrections from user (do not re-derive)
 
-- **Target Selection = chỉ 2 quy tắc auto-target toàn cục** (Nearest + Lowest HP). Per-ability logic (marked, lock-on, skillshot) là phạm trù khác. Đây là domain definition do user xác nhận — không cần research lại, không cần hỏi lại.
+- **Target Selection = only the 2 global auto-target rules** (Nearest + Lowest HP). Per-ability logic (marked, lock-on, skillshot) is a different concern. User-confirmed domain definition — do not re-research, do not re-ask.

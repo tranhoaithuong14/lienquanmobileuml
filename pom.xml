@@ -4,13 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.lqm</groupId>
+    <groupId>com.moba</groupId>
     <artifactId>arena-redesign</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Liên Quân Mobile Redesign</name>
-    <description>Teaching artifact: Liên Quân Mobile systems redesigned in Java with GoF + SOLID + POSA patterns.</description>
+    <name>MOBA Combat Redesign</name>
+    <description>Teaching artifact: MOBA combat systems (auto-targeting, hero stats) redesigned in Java with GoF + SOLID + POSA patterns. Uses generic MOBA vocabulary — no proprietary game names.</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

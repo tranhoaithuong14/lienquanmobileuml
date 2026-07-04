@@ -1,4 +1,4 @@
-# 0002 — Hero combat semantics (float HP, maxHp final, heal no-op khi dead, respawn riêng)
+# 0002 — Hero combat semantics (float HP, final maxHp, heal no-op when dead, separate respawn)
 
 ## Status
 
@@ -6,25 +6,25 @@ accepted
 
 ## Context
 
-Khi deepening `Hero` module để nó đại diện được concept cốt lõi (một Hero trong combat có HP biến động và có thể chết), cần pin xuống 4 quyết định load-bearing về HP semantics.
+When deepening the `Hero` module to represent its core concept (a combat hero with mutable HP that can die), we need to pin down 4 load-bearing decisions about HP semantics.
 
 ## Decision
 
-1. **`currentHp` là `float`** — cho phép fractional damage (DoT, lifesteal) và regen mượt. `Enemy.getCurrentHp()` interface cũng trả `float` để khớp (xem consequences).
-2. **`maxHp` final, set tại constructor** — đơn giản, đủ cho scope hiện tại. Level up / buff thay đổi maxHp để sau (sẽ cần method `setMaxHp` riêng).
-3. **`heal` no-op khi `active=false`** — match game thật: dead hero không thể bị heal. Revival qua method riêng `respawn()`.
-4. **`respawn()` method riêng** — match game: trigger bởi respawn timer bên ngoài, không tự động từ heal. Set `active=true`, `currentHp=maxHp`.
+1. **`currentHp` is `float`** — allows fractional damage (DoT, life steal) and smooth regen. The `Enemy.getCurrentHp()` interface also returns `float` to match (see consequences).
+2. **`maxHp` final, set at constructor** — simple, sufficient for current scope. Level-up / buffs that change `maxHp` come later (will need a dedicated `setMaxHp` method).
+3. **`heal` is a no-op when `alive=false`** — matches gameplay: dead heroes cannot be healed. Revival happens through the dedicated `respawn()` method.
+4. **`respawn()` is a separate method** — matches gameplay: triggered by an external respawn timer, not auto-revived from `heal`. Sets `alive=true`, `currentHp=maxHp`.
 
 ## Considered alternatives
 
-- **HP là `int`**: mất precision khi có fractional damage. Cú pháp GoF kinh điển dùng int, nhưng game có DoT/lifesteal nên float đúng với domain hơn.
-- **`maxHp` mutable với setter `setMaxHp`**: cần test cho "currentHp clamp về maxHp mới khi maxHp giảm". Quá anticipatory cho scope hiện tại.
-- **Heal auto-revive**: không match game thật. Heal trên dead hero là meaningless.
-- **Chỉ có `isAlive()`, không có `active` flag riêng**: `isAlive()` vẫn work nhưng thiếu explicit state field, khó debug, không distinguish "dead" vs "untargetable cho lý do khác".
+- **HP is `int`**: loses precision with fractional damage. Classic GoF syntax uses int, but the genre has DoT / life steal, so `float` matches the domain better.
+- **`maxHp` mutable with `setMaxHp` setter**: needs a test for "currentHp clamps to the new maxHp when maxHp shrinks". Too anticipatory for current scope.
+- **Heal auto-revives**: does not match gameplay. Healing a dead hero is meaningless.
+- **Only `isAlive()`, no separate `alive` flag**: `isAlive()` still works but lacks an explicit state field — hard to debug, and cannot distinguish "dead" from "untargetable for another reason".
 
 ## Consequences
 
-- `Enemy.getCurrentHp()` phải trả `float` (không phải `int`). Strategies đọc float trực tiếp, không qua `Math.round` → không có rounding artifact trong tie-break.
-- `Hero.getCurrentHpExact()` method đã bị xóa (đã tồn tại chỉ để bypass `Math.round` — không cần nữa).
-- `Hero` constructor throw `IllegalArgumentException` khi `maxHp <= 0`. Tests cho exception path chưa được viết — coverage gap sẽ đóng khi thêm test hygiene.
-- Future extensions: damage modifiers (armor/magic resistance) sẽ là composition hoặc method trên Hero (xem learning-records/0004).
+- `Enemy.getCurrentHp()` must return `float` (not `int`). Strategies read `float` directly, no `Math.round` — no rounding artifact in tie-breaks.
+- `Hero.getCurrentHpExact()` method was removed (existed only to bypass `Math.round` — no longer needed).
+- `Hero` constructor throws `IllegalArgumentException` when `maxHp <= 0`. Tests for the exception path were not initially written — coverage gap closed in subsequent test hygiene work.
+- Future extensions: damage modifiers (armor / magic resistance) will be either composition or a method on Hero (see learning-records/0004).

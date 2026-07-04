@@ -1,4 +1,4 @@
-# 0004 — Hero deepening: combat semantics qua 7 TDD cycles
+# 0004 — Hero deepening: combat semantics across 7 TDD cycles
 
 ## Status
 
@@ -6,53 +6,53 @@ active
 
 ## Evidence
 
-Đã drive 7 cycles TDD thuần sau grilling session, biến Hero từ data holder thành combat module với lifecycle đầy đủ. Toàn bộ progression captured trong `src/test/java/com/lqm/combat/HeroTest.java` (8 tests) và `src/main/java/com/lqm/combat/Hero.java`.
+Drove 7 pure TDD cycles after the grilling session, transforming Hero from a data holder into a combat module with a complete lifecycle. The full progression is captured in `src/test/java/com/moba/combat/HeroTest.java` (8 tests) and `src/main/java/com/moba/combat/Hero.java`.
 
-## Decisions đã chốt (từ grilling)
+## Decisions pinned (from grilling)
 
 | Decision | Value |
 |----------|-------|
-| HP type | float (thay vì int) |
-| maxHp | final, set tại constructor |
-| takeDamage | `float amount` ≥ 0; clamp 0; set active=false nếu HP ≤ 0 |
-| heal | `float amount` ≥ 0; clamp maxHp; no-op nếu !active |
-| respawn | method riêng; set active=true, currentHp=maxHp |
-| isAlive | returns active |
+| HP type | float (instead of int) |
+| maxHp | final, set at constructor |
+| takeDamage | `float amount` ≥ 0; clamp 0; set alive=false if HP ≤ 0 |
+| heal | `float amount` ≥ 0; clamp maxHp; no-op if !alive |
+| respawn | separate method; set alive=true, currentHp=maxHp |
+| isAlive | returns alive |
 
-Quyết định dựa trên game thật (Liên Quân): heal không work trên dead hero (game mechanic), revival qua respawn timer bên ngoài (không phải heal auto-revive).
+Decisions are based on the genre's actual gameplay: heal does not work on dead heroes (game mechanic), revival happens via an external respawn timer (not auto-revive from heal).
 
 ## Implications
 
-### Depth ratio thay đổi
+### Depth ratio changed
 
-Trước: Hero interface = 4 getters + 1 delegate. Shallow — interface complexity ≈ implementation complexity.
-Sau: Hero interface = 5 methods (getPosition, getCurrentHp, getName, takeDamage, heal, respawn, isAlive, selectTarget) hiding meaningful combat logic. Deeper — interface relatively simple, semantics rich.
+Before: Hero interface = 4 getters + 1 delegate. Shallow — interface complexity ≈ implementation complexity.
+After: Hero interface = 5 methods (getPosition, getCurrentHp, getName, takeDamage, heal, respawn, isAlive, selectTarget) hiding meaningful combat logic. Deeper — interface relatively simple, semantics rich.
 
 ### Locality gained
 
-HP state (currentHp, maxHp, active) và HP-mutation logic (takeDamage, heal, respawn) đều ở Hero. Future damage modifiers (armor, magic resistance), lifesteal, regen — tất cả sẽ là methods trên Hero hoặc composition qua Hero, không phân tán.
+HP state (currentHp, maxHp, alive) and HP-mutation logic (takeDamage, heal, respawn) all live in Hero. Future damage modifiers (armor, magic resistance), life steal, regen — all of those will be methods on Hero or composition through Hero, not scattered.
 
 ### Test coverage
 
-HeroTest từ 1 test → 8 tests. Mỗi method có ≥ 1 test riêng. Test seam là public interface của Hero. Tests dùng `TestEnemy` factory (đã có sẵn từ refactor trước).
+HeroTest went from 1 test → 8 tests. Each method has at least 1 dedicated test. The test seam is the public interface of Hero. Tests use the `EnemyStub` factory (already in place from the earlier refactor).
 
-### Cấu trúc TDD progression
+### TDD progression structure
 
-7 cycles theo vertical slice:
-1. Edge case cơ bản: takeDamage giảm HP
-2. Edge case: takeDamage clamp 0
-3. State transition: HP=0 → !active → selectTarget=null
-4. Positive case: heal tăng HP
-5. Edge case (characterization): heal clamp maxHp
-6. Dead-state: heal no-op khi dead
-7. State transition: respawn restore
+7 cycles by vertical slice:
+1. Basic edge case: takeDamage decreases HP
+2. Edge case: takeDamage clamps at 0
+3. State transition: HP=0 → !alive → selectTarget=null
+4. Positive case: heal increases HP
+5. Edge case (characterization): heal clamps at maxHp
+6. Dead-state: heal is a no-op when dead
+7. State transition: respawn restores
 
-### Open questions cho future
+### Open questions for the future
 
-- Damage modifiers (armor, magic resistance): nên là field trên Hero hay external module áp vào Hero? Có thể cần Chain of Responsibility pattern.
-- Lifesteal: có phải là strategy của attacker không, hay method trên Hero? Có thể là Decorator pattern.
-- Regen theo tick: có cần method `regenerate()` riêng hay implicit trong `tick()` của combat loop?
+- Damage modifiers (armor, magic resistance): a field on Hero, or an external module applied to Hero? May need Chain of Responsibility.
+- Life steal: a strategy on the attacker, or a method on Hero? Could be Decorator.
+- Regen on tick: dedicated `regenerate()` method, or implicit in the combat loop's `tick()`?
 
 ### Architecture note
 
-Workspace vẫn chưa có `CONTEXT.md` (chỉ có `GLOSSARY.md`). Domain terms mới (currentHp, maxHp, takeDamage, heal, respawn, isAlive, active) được add vào GLOSSARY.md. Nếu workspace adopt CONTEXT.md convention sau này, cần recheck vocabulary consistency.
+The workspace still lacks `CONTEXT.md` at this stage (only `GLOSSARY.md` exists). New domain terms (currentHp, maxHp, takeDamage, heal, respawn, isAlive, alive) were added to GLOSSARY.md. If the workspace later adopts CONTEXT.md, vocabulary consistency needs a recheck.

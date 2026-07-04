@@ -6,61 +6,61 @@ active
 
 ## Evidence
 
-Sau Hero deepening + reviews #1, #2, đã apply cả 2 candidates từ review #3:
+After Hero deepening + reviews #1, #2, applied both candidates from review #3:
 
 | # | Candidate | Status |
 |---|-----------|--------|
 | 1 | CONTEXT.md + docs/adr/0001, 0002 | ✅ Done |
 | 2 | Hero + CombatStats composition | ✅ Done |
 
-Persistent flag (CONTEXT.md missing) đã resolve sau 3 reviews.
+The persistent flag (CONTEXT.md missing) was resolved after 3 reviews.
 
 ## Changes applied
 
 ### Candidate 1: CONTEXT.md + ADRs
 
 **CONTEXT.md** (new, repo root):
-- Single-context "Liên Quân Mobile — Target Selection & Combat Context"
-- 4 language subheadings: Pattern terms, Target Selection, Combat Lifecycle, Geometry, Strategy Helpers
-- 18 terms với definitions + _Avoid_ aliases
-- Match CONTEXT-FORMAT.md (single-context, language section, terms grouped)
+- Single-context "MOBA — Target Selection & Combat Context"
+- Language subheadings: Pattern terms, Target Selection, Combat Lifecycle, Geometry, Strategy Helpers
+- 18 terms with definitions + `_Avoid_` aliases
+- Matches the single-context layout from CONTEXT-FORMAT.md
 
 **docs/adr/0001-strategy-pattern-for-target-selection.md** (new):
 - Status: accepted
-- Decision: GoF Strategy với 2 concrete strategies (Nearest, LowestHP); per-ability logic out of scope
+- Decision: GoF Strategy with 2 concrete strategies (Nearest, LowestHP); per-ability logic out of scope
 - Considered: if/else, inheritance, switch-enum
 - Consequences: public seam, O/C friendly
 
 **docs/adr/0002-hero-combat-semantics.md** (new):
 - Status: accepted
-- Decision: float HP, maxHp final at constructor, heal no-op khi dead, respawn riêng
-- Considered: int HP, mutable maxHp, heal auto-revive, isAlive only (no active flag)
-- Consequences: Enemy.getCurrentHp float, xóa getCurrentHpExact, constructor validation
+- Decision: float HP, maxHp final at constructor, heal no-op when dead, respawn separate
+- Considered: int HP, mutable maxHp, heal auto-revive, isAlive only (no alive flag)
+- Consequences: `Enemy.getCurrentHp` float, removed `getCurrentHpExact`, constructor validation
 
 ### Candidate 2: Hero + CombatStats composition
 
 **CombatStats.java** (new):
-- HP state machine thuần: maxHp, currentHp, active + takeDamage/heal/respawn/isAlive/getCurrentHp/getMaxHp
-- 0 dependencies lên Hero/Position/TargetSelector — pure reusable
-- Constructor throws khi maxHp ≤ 0
+- Pure HP state machine: maxHp, currentHp, alive + takeDamage/heal/respawn/isAlive/getCurrentHp/getMaxHp
+- 0 dependencies on Hero/Position/TargetSelector — pure, reusable
+- Constructor throws when maxHp ≤ 0
 
 **Hero.java** (refactored):
 - Fields: name, position, stats (CombatStats), targetSelector
-- takeDamage/heal/respawn/isAlive/getCurrentHp → delegate sang stats
-- selectTarget → check stats.isAlive() trước khi delegate
+- takeDamage/heal/respawn/isAlive/getCurrentHp → delegate to stats
+- selectTarget → check stats.isAlive() before delegating
 - Implements Enemy (getPosition/getCurrentHp/getName)
 
 **CombatStatsTest.java** (new, 11 tests):
-- 7 HP lifecycle tests (mirror HeroTest cycles 1-7, giờ ở CombatStats)
-- 3 exception path tests (constructor non-positive maxHp, takeDamage(-x), heal(-x)) — **đóng coverage gap flagged ở LR-0005**
-- 1 hero kill test (overlap với test cũ, đã viết lại cho CombatStats)
+- 7 HP lifecycle tests (mirror HeroTest cycles 1–7, now on CombatStats)
+- 3 exception path tests (constructor non-positive maxHp, takeDamage(-x), heal(-x)) — **closes the coverage gap flagged in LR-0005**
+- 1 hero kill test (overlap with the old test, rewritten for CombatStats)
 
 **HeroTest.java** (refactored, 5 tests):
 - selectTargetReturnsNullWhenEnemiesListIsEmpty
 - deadHeroReturnsNullFromSelectTargetEvenWithEnemies
 - getCurrentHpDelegatesToCombatStats
 - takeDamageDelegatesToCombatStats
-- aliveHeroDelegatesTargetSelectionToStrategy (dùng stub TargetSelector)
+- aliveHeroDelegatesTargetSelectionToStrategy (uses a stub TargetSelector)
 
 ## Implications
 
@@ -76,7 +76,7 @@ combat/                              combat/
                                      └── ...
 ```
 
-Hero giảm 95 → 60 dòng (-37%). CombatStats 75 dòng nhưng zero coupling lên Hero/Position. Mỗi module giờ single-purpose.
+Hero shrunk 95 → 60 lines (-37%). CombatStats is 75 lines but has zero coupling back to Hero/Position. Each module is now single-purpose.
 
 ### Test count
 
@@ -85,41 +85,41 @@ Hero giảm 95 → 60 dòng (-37%). CombatStats 75 dòng nhưng zero coupling l�
 - CombatStatsTest: 0 → 11 (+11)
 - Other tests: unchanged
 
-3 exception path tests đã đóng coverage gap từ LR-0005.
+The 3 exception path tests closed the coverage gap from LR-0005.
 
 ### Locality
 
-- HP state + HP actions: 100% trong CombatStats. Hero không còn field HP.
-- Identity + targeting: 100% trong Hero. CombatStats không biết Hero/Position/selector.
-- Future combat mechanics (damage modifiers, status effects, regen): thêm vào CombatStats, không bloat Hero.
+- HP state + HP actions: 100% in CombatStats. Hero no longer has an HP field.
+- Identity + targeting: 100% in Hero. CombatStats doesn't know about Hero/Position/selector.
+- Future combat mechanics (damage modifiers, status effects, regen): add to CombatStats, no bloat on Hero.
 
 ### Leverage
 
-- CombatStats reusable: tower, creep, summon có thể compose cùng module. Chỉ cần implement Enemy interface (getCurrentHp + getPosition).
-- Tests tách rời: CombatStats test pure, không cần set up Hero+position+selector.
+- CombatStats is reusable: tower, creep, summon can compose the same module. Just implement Enemy (getCurrentHp + getPosition).
+- Tests are decoupled: CombatStats tests are pure, no need to set up Hero + position + selector.
 
 ### Workspace debt resolved
 
-CONTEXT.md + docs/adr/ giờ align với convention engineering skills. Future architecture reviews sẽ:
-- Anchor domain vocabulary ở CONTEXT.md (single source of truth).
-- Reference ADRs trước khi re-litigate (ADR-0001 cho Strategy choice, ADR-0002 cho HP semantics).
-- Stop re-flagging persistent note (resolved).
+CONTEXT.md + docs/adr/ now align with engineering-skills conventions. Future architecture reviews will:
+- Anchor domain vocabulary in CONTEXT.md (single source of truth).
+- Reference ADRs before re-litigating (ADR-0001 for Strategy choice, ADR-0002 for HP semantics).
+- Stop re-flagging the persistent note.
 
-### Friction còn lại
+### Friction remaining
 
-- GLOSSARY.md và CONTEXT.md hiện chứa overlap lớn. Có thể deprecate GLOSSARY sau vài session, hoặc giữ GLOSSARY cho teaching-context và CONTEXT cho engineering-context. Chưa quyết.
-- Module khác (NearestEnemy, LowestHP, MinSelector, Position) có đang shallow không? Các review trước đã address; không thấy friction mới ngoài Hero split đã làm.
+- GLOSSARY.md and CONTEXT.md currently overlap a lot. Could deprecate GLOSSARY in a few sessions, or keep GLOSSARY for teaching context and CONTEXT for engineering context. Undecided.
+- Are other modules (NearestEnemy, LowestHP, MinSelector, Position) shallow? Past reviews addressed this; no new friction beyond the Hero split already done.
 
 ## Lessons
 
-### Deepening đôi khi "trượt" modules liên quan
+### Deepening sometimes "drags" dependent modules
 
-Khi Hero deepened (thêm float HP), Enemy interface cần theo (int → float). Lesson: sau khi deepen một module, kiểm tra interface mà nó implement/depend-on — chúng có thể đã trở nên inconsistent.
+When Hero was deepened (float HP added), the Enemy interface had to follow (int → float). Lesson: after deepening a module, check the interfaces it implements / depends on — they may have become inconsistent.
 
-### Workspace-level flags persist nếu không được address
+### Workspace-level flags persist if not addressed
 
-CONTEXT.md missing đã được flag 3 lần. Mỗi review lại mất effort để note. Lesson: nếu một flag persistent, nó xứng đáng được address sớm — apply it hoặc ghi ADR để future reviews không re-flag.
+CONTEXT.md missing was flagged 3 times. Every review paid the cost to re-note it. Lesson: a persistent flag deserves early action — apply it or write an ADR so future reviews stop re-flagging.
 
-### Composition > inheritance ngay cả với module chưa "cần" split
+### Composition beats inheritance even for modules that don't "need" splitting yet
 
-Hero 95 dòng vẫn workable. Nhưng future combat mechanics (armor, status effects) chắc chắn sẽ thêm. Composition done preemptively = cheap; composition done after = expensive rewrite.
+Hero at 95 lines was still workable. But future combat mechanics (armor, status effects) will certainly be added. Composition done preemptively is cheap; composition done later is an expensive rewrite.
