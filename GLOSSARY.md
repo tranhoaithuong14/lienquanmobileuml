@@ -38,3 +38,33 @@ _Avoid_: TargetSelector implementation for marks
 
 **HeroPriority**:
 _(Not implemented.)_ Lọc danh sách mục tiêu, chỉ giữ tướng địch, bỏ qua lính và quái rừng. Hiện không dùng trong model vì game thật chỉ có 2 strategy toàn cục.
+
+## Combat lifecycle (added 2026-07-04)
+
+**currentHp**:
+HP hiện tại của Hero, kiểu `float`. Mutable qua `takeDamage` và `heal`. Floor 0, ceiling maxHp.
+_Avoid_: hp, HP
+
+**maxHp**:
+Giới hạn trên của currentHp, kiểu `float`. Final, set tại constructor. currentHp khởi đầu = maxHp.
+_Avoid_: maxHealth, hpCap
+
+**active**:
+`boolean` flag trên Hero. `true` = có thể hành động; `false` = đã chết. Set `false` khi takeDamage đưa currentHp ≤ 0. Set `true` khi `respawn()`. Không thay đổi khi heal — heal chỉ work khi active=true.
+_Avoid_: alive, canAct
+
+**isAlive**:
+Trả về `true` nếu Hero còn sống. Định nghĩa hiện tại: `currentHp > 0`. Tương đương `active` trong model này.
+_Avoid_: isDead (ngược lại)
+
+**takeDamage**:
+Phương thức Hero giảm currentHp. Chỉ nhận amount ≥ 0. Floor tại 0. Set `active=false` nếu currentHp chạm 0.
+_Avoid_: damage, applyDamage
+
+**heal**:
+Phương thức Hero tăng currentHp. Chỉ nhận amount ≥ 0. Ceiling tại maxHp. No-op nếu `active=false` (match game: dead hero không thể bị heal).
+_Avoid_: restore, recover
+
+**respawn**:
+Phương thức Hero hồi sinh. Set `active=true` và `currentHp = maxHp`. Match game thật: trigger bởi respawn timer bên ngoài, không phải từ heal.
+_Avoid_: revive, spawnAgain
