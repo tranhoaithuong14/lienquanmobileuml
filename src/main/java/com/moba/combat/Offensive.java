@@ -1,6 +1,6 @@
 package com.moba.combat;
 
-public record OffensiveStats(
+public record Offensive(
         float movementSpeed,
         float armorPen,
         float magicPen,
@@ -18,7 +18,7 @@ public record OffensiveStats(
     public static final float COOLDOWN_REDUCTION_MIN = 0f;
     public static final float COOLDOWN_REDUCTION_MAX = 0.40f;
 
-    public static OffensiveStats of(
+    public static Offensive of(
             float movementSpeed,
             float armorPen, float magicPen,
             float attackSpeed,
@@ -26,13 +26,13 @@ public record OffensiveStats(
             float lifeSteal, float spellVamp,
             float cooldownReduction,
             float armorPenPercent, float magicPenPercent) {
-        return new OffensiveStats(movementSpeed, armorPen, magicPen,
+        return new Offensive(movementSpeed, armorPen, magicPen,
                 attackSpeed, critChance, critDamage,
                 lifeSteal, spellVamp, cooldownReduction,
                 armorPenPercent, magicPenPercent);
     }
 
-    public OffensiveStats {
+    public Offensive {
         if (movementSpeed <= 0f) {
             throw new IllegalArgumentException("movementSpeed must be > 0, got " + movementSpeed);
         }

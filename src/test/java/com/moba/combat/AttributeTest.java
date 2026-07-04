@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class BaseStatsTest {
+class AttributeTest {
 
-    private static BaseStats allZeroExceptHp(float hp) {
-        return new BaseStats(
+    private static Attribute allZeroExceptHp(float hp) {
+        return new Attribute(
                 /* basic:       */ hp, 0f, 0f, 0f, 0f, 0f,
                 /* offensive:   */ 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 /* attackRange: */ AttackRange.MELEE);
@@ -16,8 +16,8 @@ class BaseStatsTest {
 
     @Test
     void recordEqualityHolds() {
-        BaseStats a = allZeroExceptHp(100f);
-        BaseStats b = allZeroExceptHp(100f);
+        Attribute a = allZeroExceptHp(100f);
+        Attribute b = allZeroExceptHp(100f);
 
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
@@ -31,11 +31,11 @@ class BaseStatsTest {
 
     @Test
     void rejectsNonPositiveMovementSpeed() {
-        assertThrows(IllegalArgumentException.class, () -> new BaseStats(
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f,
                 /* movementSpeed */ 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE));
-        assertThrows(IllegalArgumentException.class, () -> new BaseStats(
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f,
                 /* movementSpeed */ -1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE));
@@ -43,11 +43,11 @@ class BaseStatsTest {
 
     @Test
     void rejectsCritChanceOutsideUnit() {
-        assertThrows(IllegalArgumentException.class, () -> new BaseStats(
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
                 /* critChance */ -0.01f, /* critDamage */ 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE));
-        assertThrows(IllegalArgumentException.class, () -> new BaseStats(
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
                 /* critChance */ 1.01f, /* critDamage */ 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE));
@@ -55,7 +55,7 @@ class BaseStatsTest {
 
     @Test
     void rejectsCritDamageBelowOne() {
-        assertThrows(IllegalArgumentException.class, () -> new BaseStats(
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f,
                 /* critDamage */ 0.99f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE));
@@ -63,7 +63,7 @@ class BaseStatsTest {
 
     @Test
     void allowsHighCritDamage() {
-        BaseStats s = new BaseStats(
+        Attribute s = new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f,
                 /* critDamage */ 5.0f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE);
@@ -73,7 +73,7 @@ class BaseStatsTest {
 
     @Test
     void rejectsCooldownReductionAboveCap() {
-        assertThrows(IllegalArgumentException.class, () -> new BaseStats(
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f,
                 /* cooldownReduction */ 0.41f, 0f, 0f,
                 AttackRange.MELEE));
@@ -81,7 +81,7 @@ class BaseStatsTest {
 
     @Test
     void rejectsNullAttackRange() {
-        assertThrows(IllegalArgumentException.class, () -> new BaseStats(
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 null));
     }

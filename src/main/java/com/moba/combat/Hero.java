@@ -8,23 +8,23 @@ public class Hero implements Enemy {
 
     private final String name;
     private final Position position;
-    private final BaseStats baseStats;
+    private final Attribute attribute;
     private final CombatStats vitals;
     private final TargetSelector targetSelector;
 
-    public Hero(String name, Position position, BaseStats baseStats, TargetSelector targetSelector) {
-        if (baseStats == null) {
-            throw new IllegalArgumentException("baseStats must not be null");
+    public Hero(String name, Position position, Attribute attribute, TargetSelector targetSelector) {
+        if (attribute == null) {
+            throw new IllegalArgumentException("attribute must not be null");
         }
         this.name = name;
         this.position = position;
-        this.baseStats = baseStats;
-        this.vitals = new CombatStats(baseStats.hp());
+        this.attribute = attribute;
+        this.vitals = new CombatStats(attribute.hp());
         this.targetSelector = targetSelector;
     }
 
-    public BaseStats getBaseStats() {
-        return baseStats;
+    public Attribute getAttribute() {
+        return attribute;
     }
 
     public void takeDamage(float amount) {

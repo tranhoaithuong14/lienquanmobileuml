@@ -1,6 +1,6 @@
 package com.moba.hero;
 
-import com.moba.combat.BaseStats;
+import com.moba.combat.Attribute;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -15,17 +15,17 @@ class HeroCatalogTest {
 
     @Test
     void findYornByName() {
-        Optional<BaseStats> stats = HeroCatalog.find(Yorn.NAME);
+        Optional<Attribute> attribute = HeroCatalog.find(Yorn.NAME);
 
-        assertTrue(stats.isPresent());
-        assertSame(Yorn.stats(), stats.get());
+        assertTrue(attribute.isPresent());
+        assertSame(Yorn.attribute(), attribute.get());
     }
 
     @Test
     void findReturnsEmptyForUnknownName() {
-        Optional<BaseStats> stats = HeroCatalog.find("NotARealHero");
+        Optional<Attribute> attribute = HeroCatalog.find("NotARealHero");
 
-        assertFalse(stats.isPresent());
+        assertFalse(attribute.isPresent());
     }
 
     @Test
@@ -37,9 +37,9 @@ class HeroCatalogTest {
 
     @Test
     void requireReturnsKnownHero() {
-        BaseStats stats = HeroCatalog.require(Yorn.NAME);
+        Attribute attribute = HeroCatalog.require(Yorn.NAME);
 
-        assertSame(Yorn.stats(), stats);
+        assertSame(Yorn.attribute(), attribute);
     }
 
     @Test

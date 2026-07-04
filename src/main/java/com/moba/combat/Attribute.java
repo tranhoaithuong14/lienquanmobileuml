@@ -1,18 +1,18 @@
 package com.moba.combat;
 
-public record BaseStats(
-        BasicStats basic,
-        OffensiveStats offensive,
+public record Attribute(
+        Basic basic,
+        Offensive offensive,
         AttackRange attackRange
 ) {
 
-    public BaseStats {
+    public Attribute {
         if (attackRange == null) {
             throw new IllegalArgumentException("attackRange must not be null");
         }
     }
 
-    public BaseStats(
+    public Attribute(
             float hp,
             float normalAttack,
             float abilityPower,
@@ -33,8 +33,8 @@ public record BaseStats(
             AttackRange attackRange
     ) {
         this(
-                new BasicStats(hp, normalAttack, abilityPower, armor, magicDefense, maxMana),
-                new OffensiveStats(movementSpeed, armorPen, magicPen,
+                new Basic(hp, normalAttack, abilityPower, armor, magicDefense, maxMana),
+                new Offensive(movementSpeed, armorPen, magicPen,
                         attackSpeed, critChance, critDamage,
                         lifeSteal, spellVamp, cooldownReduction,
                         armorPenPercent, magicPenPercent),

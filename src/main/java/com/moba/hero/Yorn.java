@@ -1,10 +1,10 @@
 package com.moba.hero;
 
 import com.moba.combat.AttackRange;
-import com.moba.combat.BaseStats;
-import com.moba.combat.BasicStats;
+import com.moba.combat.Attribute;
+import com.moba.combat.Basic;
 import com.moba.combat.Hero;
-import com.moba.combat.OffensiveStats;
+import com.moba.combat.Offensive;
 import com.moba.combat.Position;
 import com.moba.strategy.LowestHP;
 import com.moba.strategy.TargetSelector;
@@ -13,11 +13,11 @@ public final class Yorn {
 
     public static final String NAME = "Yorn";
 
-    private static final BaseStats STATS = new BaseStats(
-            new BasicStats(
+    private static final Attribute ATTRIBUTE = new Attribute(
+            new Basic(
                     3582f, 174f, 0f, 140f, 80f, 440f
             ),
-            new OffensiveStats(
+            new Offensive(
                     360f, 0f, 0f, 0f, 0f, 2.00f, 0f, 0f, 0f, 0f, 0f
             ),
             AttackRange.RANGED
@@ -25,8 +25,8 @@ public final class Yorn {
 
     private Yorn() {}
 
-    public static BaseStats stats() {
-        return STATS;
+    public static Attribute attribute() {
+        return ATTRIBUTE;
     }
 
     public static Hero create() {
@@ -34,6 +34,6 @@ public final class Yorn {
     }
 
     public static Hero create(Position position, TargetSelector targetSelector) {
-        return new Hero(NAME, position, stats(), targetSelector);
+        return new Hero(NAME, position, attribute(), targetSelector);
     }
 }

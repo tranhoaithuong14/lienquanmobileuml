@@ -1,6 +1,6 @@
 package com.moba.combat;
 
-public record BasicStats(
+public record Basic(
         float hp,
         float normalAttack,
         float abilityPower,
@@ -9,17 +9,17 @@ public record BasicStats(
         float maxMana
 ) {
 
-    public static BasicStats of(
+    public static Basic of(
             float hp,
             float normalAttack,
             float abilityPower,
             float armor,
             float magicDefense,
             float maxMana) {
-        return new BasicStats(hp, normalAttack, abilityPower, armor, magicDefense, maxMana);
+        return new Basic(hp, normalAttack, abilityPower, armor, magicDefense, maxMana);
     }
 
-    public BasicStats {
+    public Basic {
         if (hp <= 0f) {
             throw new IllegalArgumentException("hp must be > 0, got " + hp);
         }

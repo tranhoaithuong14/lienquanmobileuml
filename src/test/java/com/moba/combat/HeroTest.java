@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 class HeroTest {
 
-    private static BaseStats minimalStats(float hp) {
-        return new BaseStats(
+    private static Attribute minimalAttribute(float hp) {
+        return new Attribute(
                 hp, 0f, 0f, 0f, 0f, 0f,
                 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE);
@@ -23,7 +23,7 @@ class HeroTest {
 
     @Test
     void selectTargetReturnsNullWhenEnemiesListIsEmpty() {
-        Hero hero = new Hero("Yena", new Position(0, 0), minimalStats(100f), new NearestEnemy());
+        Hero hero = new Hero("Yena", new Position(0, 0), minimalAttribute(100f), new NearestEnemy());
 
         Enemy result = hero.selectTarget(List.of());
 
@@ -32,7 +32,7 @@ class HeroTest {
 
     @Test
     void deadHeroReturnsNullFromSelectTargetEvenWithEnemies() {
-        Hero hero = new Hero("Yena", new Position(0, 0), minimalStats(100f), new NearestEnemy());
+        Hero hero = new Hero("Yena", new Position(0, 0), minimalAttribute(100f), new NearestEnemy());
         Enemy a = EnemyStub.at(new Position(5, 0), 100, "A");
 
         hero.takeDamage(100f);
@@ -42,7 +42,7 @@ class HeroTest {
 
     @Test
     void getCurrentHpDelegatesToCombatStats() {
-        Hero hero = new Hero("Yena", new Position(0, 0), minimalStats(100f), new NearestEnemy());
+        Hero hero = new Hero("Yena", new Position(0, 0), minimalAttribute(100f), new NearestEnemy());
 
         hero.takeDamage(25f);
 
@@ -51,7 +51,7 @@ class HeroTest {
 
     @Test
     void takeDamageDelegatesToCombatStats() {
-        Hero hero = new Hero("Yena", new Position(0, 0), minimalStats(100f), new NearestEnemy());
+        Hero hero = new Hero("Yena", new Position(0, 0), minimalAttribute(100f), new NearestEnemy());
 
         hero.takeDamage(40f);
 
@@ -61,7 +61,7 @@ class HeroTest {
     @Test
     void aliveHeroDelegatesTargetSelectionToStrategy() {
         TargetSelector alwaysPickFirst = (attacker, list) -> list.isEmpty() ? null : list.get(0);
-        Hero hero = new Hero("Yena", new Position(0, 0), minimalStats(100f), alwaysPickFirst);
+        Hero hero = new Hero("Yena", new Position(0, 0), minimalAttribute(100f), alwaysPickFirst);
         Enemy a = EnemyStub.at(new Position(5, 0), 100, "A");
 
         Enemy result = hero.selectTarget(List.of(a));
@@ -70,22 +70,22 @@ class HeroTest {
     }
 
     @Test
-    void getBaseStatsPreservesReferenceIdentity() {
-        BaseStats stats = minimalStats(100f);
-        Hero hero = new Hero("Yena", new Position(0, 0), stats, new NearestEnemy());
+    void getAttributePreservesReferenceIdentity() {
+        Attribute attribute = minimalAttribute(100f);
+        Hero hero = new Hero("Yena", new Position(0, 0), attribute, new NearestEnemy());
 
-        assertSame(stats, hero.getBaseStats());
+        assertSame(attribute, hero.getAttribute());
     }
 
     @Test
-    void currentHpInitialisedFromBaseStatsMaxHp() {
-        Hero hero = new Hero("Yena", new Position(0, 0), minimalStats(250f), new NearestEnemy());
+    void currentHpInitialisedFromAttributeHp() {
+        Hero hero = new Hero("Yena", new Position(0, 0), minimalAttribute(250f), new NearestEnemy());
 
         assertEquals(250f, hero.getCurrentHp());
     }
 
     @Test
-    void constructorRejectsNullBaseStats() {
+    void constructorRejectsNullAttribute() {
         try {
             new Hero("Yena", new Position(0, 0), null, new NearestEnemy());
             org.junit.jupiter.api.Assertions.fail("expected IllegalArgumentException");

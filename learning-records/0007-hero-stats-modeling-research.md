@@ -19,9 +19,9 @@ Investigated how to model a hero's full detail-screen stats (HP, armor, AD, magi
 ## Other recommendations (see ADR for citations)
 
 - **`attackRange` = `enum { MELEE, RANGED }`**, not String (Bloch Item 34). The screen shows a label ("Ranged"), not a number; numeric reach is a separate concern.
-- **Catalog = Repository/Registry** of immutable `BaseStats`. No per-hero subclasses (ADR-0001 already rejected inheritance). Passives → Strategy/Specification; buffs → Decorator.
+- **Catalog = Repository/Registry** of immutable `Attribute`. No per-hero subclasses (ADR-0001 already rejected inheritance). Passives → Strategy/Specification; buffs → Decorator.
 - **GoF Composite rejected** for stats (not a part-whole tree) — it's Value Object composition. **Memento rejected** for level-up (a forward transform, not undo).
-- **Decomposition**: prefer immutable `BaseStats` record, optionally split into `BasicStats`/`OffensiveStats` VOs; kill flat/bonus and flat/% data clumps. Land incrementally to avoid premature generalization (Clean Code Ch.10).
+- **Decomposition**: prefer immutable `Attribute` record, optionally split into `BasicStats`/`OffensiveStats` VOs; kill flat/bonus and flat/% data clumps. Land incrementally to avoid premature generalization (Clean Code Ch.10).
 
 ## Caveats
 
