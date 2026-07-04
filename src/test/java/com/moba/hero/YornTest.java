@@ -2,6 +2,7 @@ package com.moba.hero;
 
 import com.moba.combat.AttackRange;
 import com.moba.combat.Attribute;
+import com.moba.combat.CombatResource;
 import com.moba.combat.Hero;
 import com.moba.combat.HeroRole;
 import com.moba.combat.Position;
@@ -18,8 +19,13 @@ class YornTest {
     }
 
     @Test
-    void yornMaxManaMatchesSheet() {
-        assertEquals(440f, Yorn.attribute().maxMana());
+    void yornResourceTypeIsMana() {
+        assertEquals(CombatResource.MANA, Yorn.attribute().resourceType());
+    }
+
+    @Test
+    void yornMaxResourceMatchesSheet() {
+        assertEquals(440f, Yorn.attribute().maxResource());
     }
 
     @Test

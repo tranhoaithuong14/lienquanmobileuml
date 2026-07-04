@@ -22,7 +22,8 @@ public record Attribute(
             float abilityPower,
             float armor,
             float magicDefense,
-            float maxMana,
+            CombatResource resourceType,
+            float maxResource,
             float movementSpeed,
             float armorPen,
             float magicPen,
@@ -38,7 +39,7 @@ public record Attribute(
             HeroRole role
     ) {
         this(
-                new Basic(hp, normalAttack, abilityPower, armor, magicDefense, maxMana),
+                new Basic(hp, normalAttack, abilityPower, armor, magicDefense, resourceType, maxResource),
                 new Offensive(movementSpeed, armorPen, magicPen,
                         attackSpeed, critChance, critDamage,
                         lifeSteal, spellVamp, cooldownReduction,
@@ -54,7 +55,8 @@ public record Attribute(
     public float abilityPower() { return basic.abilityPower(); }
     public float armor() { return basic.armor(); }
     public float magicDefense() { return basic.magicDefense(); }
-    public float maxMana() { return basic.maxMana(); }
+    public CombatResource resourceType() { return basic.resourceType(); }
+    public float maxResource() { return basic.maxResource(); }
 
     public float movementSpeed() { return offensive.movementSpeed(); }
     public float armorPen() { return offensive.armorPen(); }

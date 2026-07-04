@@ -16,7 +16,7 @@ class HeroTest {
 
     private static Attribute minimalAttribute(float hp) {
         return new Attribute(
-                hp, 0f, 0f, 0f, 0f, 0f,
+                hp, 0f, 0f, 0f, 0f, CombatResource.MANA, 0f,
                 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
                 AttackRange.MELEE, HeroRole.WARRIOR);
     }

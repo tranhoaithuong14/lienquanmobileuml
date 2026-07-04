@@ -3,6 +3,7 @@ package com.moba.hero;
 import com.moba.combat.AttackRange;
 import com.moba.combat.Attribute;
 import com.moba.combat.Basic;
+import com.moba.combat.CombatResource;
 import com.moba.combat.Hero;
 import com.moba.combat.HeroRole;
 import com.moba.combat.Offensive;
@@ -16,7 +17,8 @@ public final class Yorn {
 
     private static final Attribute ATTRIBUTE = new Attribute(
             new Basic(
-                    3582f, 174f, 0f, 140f, 80f, 440f
+                    3582f, 174f, 0f, 140f, 80f,
+                    CombatResource.MANA, 440f
             ),
             new Offensive(
                     360f, 0f, 0f, 0f, 0f, 2.00f, 0f, 0f, 0f, 0f, 0f

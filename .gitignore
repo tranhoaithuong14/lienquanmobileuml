@@ -1,0 +1,10 @@
+# Local tooling caches
+.playwright-mcp/
+
+# IDE / runtime
+.idea/
+.vscode/
+.DS_Store
+
+# Build output
+target/
