@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference — Strategy Pattern Cheatsheet</title>
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <article>
+    <header>
+      <p class="kicker">Reference Document · Strategy Pattern</p>
+      <h1>Strategy Pattern — Cheatsheet</h1>
+      <p class="subtitle">Tóm tắt 1 trang. In ra dán tường nếu cần.</p>
+    </header>
+
+    <section>
+      <h2>Bốn thành phần</h2>
+      <table>
+        <thead>
+          <tr><th>Vai trò</th><th>Trong bài toán</th><th>Trách nhiệm</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Strategy</strong></td>
+            <td><code>TargetSelector</code> (interface)</td>
+            <td>Định nghĩa hành vi có thể thay thế</td>
+          </tr>
+          <tr>
+            <td><strong>ConcreteStrategy</strong></td>
+            <td><code>NearestEnemy</code>, <code>LowestHP</code>, <code>MarkedTarget</code></td>
+            <td>Một cách cụ thể để làm hành vi đó</td>
+          </tr>
+          <tr>
+            <td><strong>Context</strong></td>
+            <td><code>Hero</code></td>
+            <td>Giữ reference tới Strategy, ủy quyền công việc</td>
+          </tr>
+          <tr>
+            <td><strong>Client</strong></td>
+            <td>Code khởi tạo <code>new Hero("Yena", new LowestHP())</code></td>
+            <td>Chọn ConcreteStrategy nào gắn vào Context</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Skeleton Java — copy và sửa</h2>
+      <pre><code class="language-java">// 1. Strategy
+public interface TargetSelector {
+    Enemy select(Enemy attacker, List&lt;Enemy&gt; enemies);
+}
+
+// 2. ConcreteStrategy
+public class NearestEnemy implements TargetSelector {
+    @Override public Enemy select(Enemy a, List&lt;Enemy&gt; es) {
+        // ...
+    }
+}
+
+// 3. Context
+public class Hero {
+    private final TargetSelector selector;
+    public Hero(TargetSelector s) { this.selector = s; }
+    public void autoAttack(List&lt;Enemy&gt; enemies) {
+        Enemy t = selector.select(this, enemies);
+        if (t != null) System.out.println("hit " + t);
+    }
+}
+
+// 4. Client
+Hero yena = new Hero(new LowestHP());</code></pre>
+    </section>
+
+    <section>
+      <h2>Quy tắc vàng</h2>
+      <ul>
+        <li><strong>Context không được biết ConcreteStrategy cụ thể</strong> — chỉ giữ reference tới interface.</li>
+        <li><strong>Mỗi ConcreteStrategy là một class riêng</strong> — không switch/if bên trong Strategy.</li>
+        <li><strong>Strategy có thể trả <code>null</code></strong> — caller quyết định xử lý.</li>
+        <li><strong>Strategy có thể được thay đổi runtime</strong> qua setter, không chỉ constructor.</li>
+        <li><strong>Đừng nhầm Strategy với State</strong> — Strategy do Client chọn; State do Context tự chuyển.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>So sánh với các lựa chọn khác</h2>
+      <table>
+        <thead>
+          <tr><th>Cách</th><th>Khi nào dùng</th><th>Vấn đề</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>if/else</code> trong Hero</td>
+            <td>1-2 trường hợp, không mở rộng</td>
+            <td>Thêm case = sửa Hero. Vi phạm Open/Closed.</td>
+          </tr>
+          <tr>
+            <td><code>switch</code> trên enum</td>
+            <td>Enum cố định, ít case</td>
+            <td>Thêm enum = sửa switch. Vẫn vi phạm O/C.</td>
+          </tr>
+          <tr>
+            <td>Inheritance (<code>LowestHPHero extends Hero</code>)</td>
+            <td>Phân cấp tĩnh, ít biến thể</td>
+            <td>Bùng nổ tổ hợp khi có N chiều biến thể.</td>
+          </tr>
+          <tr>
+            <td><strong>Strategy pattern</strong></td>
+            <td>Nhiều thuật toán cho cùng hành vi, mở rộng thường xuyên</td>
+            <td>Thêm class. Nhiều file nhỏ.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Liên kết</h2>
+      <ul>
+        <li><a href="../lessons/0001-strategy-target-selection.html">Lesson 0001 — Strategy pattern qua Target Selection</a></li>
+        <li><a href="../../.scratch/research/target-selection-options.md">Research note — cơ chế target selection thật của Liên Quân</a></li>
+        <li><a href="https://refactoring.guru/design-patterns/strategy">Refactoring Guru — Strategy</a> (external)</li>
+        <li><a href="../GLOSSARY.md">Glossary — thuật ngữ chuẩn của workspace</a></li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Reference · Strategy Pattern cheatsheet · workspace tại <code>/home/ttran/Projects/lienquanmobileuml/</code></p>
+    </footer>
+  </article>
+</body>
+</html>
