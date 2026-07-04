@@ -41,6 +41,10 @@ _(Not implemented.)_ Lọc danh sách mục tiêu, chỉ giữ tướng địch,
 
 ## Combat lifecycle (added 2026-07-04)
 
+**CombatStats**:
+HP state machine cho entity có thể chịu damage và chết. Tách ra từ Hero ở review #3 (Hero → Hero + CombatStats composition). Sở hữu maxHp, currentHp, active + các action (takeDamage, heal, respawn, isAlive). Reusable cho tower/creep/summon.
+_Avoid_: Health, HpState
+
 **currentHp**:
 HP hiện tại của Hero, kiểu `float`. Mutable qua `takeDamage` và `heal`. Floor 0, ceiling maxHp.
 _Avoid_: hp, HP

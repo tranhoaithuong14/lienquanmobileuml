@@ -1,22 +1,22 @@
 package com.lqm.combat;
 
 import com.lqm.strategy.NearestEnemy;
+import com.lqm.strategy.TargetSelector;
 import com.lqm.test.TestEnemy;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Test cho Hero (Context trong Strategy pattern + combat lifecycle).
- * Mỗi cycle = 1 test method, theo TDD progression.
+ * Test cho Hero — focus vào delegation sang CombatStats và TargetSelector.
+ * HP lifecycle tests đã chuyển sang CombatStatsTest.
  */
 class HeroTest {
 
+    /** Hero + empty enemy list → selectTarget trả null (không qua strategy). */
     @Test
     void selectTargetReturnsNullWhenEnemiesListIsEmpty() {
         Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
@@ -26,83 +26,47 @@ class HeroTest {
         assertNull(result);
     }
 
-    /** Cycle 1 — GREEN. */
+    /** Dead Hero (CombatStats.isAlive=false) → selectTarget trả null dù có enemy trong list. */
     @Test
-    void takeDamageReducesCurrentHp() {
-        Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
-
-        hero.takeDamage(30.0f);
-
-        assertEquals(70.0f, hero.getCurrentHp());
-    }
-
-    /** Cycle 2 — GREEN. */
-    @Test
-    void takeDamageClampsAtZero() {
-        Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
-
-        hero.takeDamage(150.0f);
-
-        assertEquals(0.0f, hero.getCurrentHp());
-    }
-
-    /** Cycle 3 — GREEN. */
-    @Test
-    void takeDamageToZeroKillsHeroAndNullsSelectTarget() {
+    void deadHeroReturnsNullFromSelectTargetEvenWithEnemies() {
         Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
         Enemy a = TestEnemy.at(new Position(5, 0), 100, "A");
-        Enemy b = TestEnemy.at(new Position(3, 4), 100, "B");
 
-        hero.takeDamage(100.0f);
+        hero.takeDamage(100f);
 
-        assertFalse(hero.isAlive(), "Hero with 0 HP must not be alive");
-        assertNull(hero.selectTarget(List.of(a, b)),
-                "Dead Hero must not return any target, even with valid enemies");
+        assertNull(hero.selectTarget(List.of(a)));
     }
 
-    /** Cycle 4 — GREEN. */
+    /** Hero.getCurrentHp() delegate sang CombatStats.getCurrentHp(). */
     @Test
-    void healIncreasesCurrentHp() {
+    void getCurrentHpDelegatesToCombatStats() {
         Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
 
-        hero.takeDamage(30.0f);
-        hero.heal(20.0f);
+        hero.takeDamage(25f);
 
-        assertEquals(90.0f, hero.getCurrentHp());
-        assertTrue(hero.isAlive(), "Healed hero must still be alive");
+        assertEquals(75f, hero.getCurrentHp());
     }
 
-    /** Cycle 5 — characterization test. */
+    /** Hero takeDamage → CombatStats takeDamage → currentHp giảm. */
     @Test
-    void healClampsAtMaxHp() {
+    void takeDamageDelegatesToCombatStats() {
         Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
 
-        hero.heal(50.0f);
+        hero.takeDamage(40f);
 
-        assertEquals(100.0f, hero.getCurrentHp());
+        assertEquals(60f, hero.getCurrentHp());
     }
 
-    /** Cycle 6 — GREEN. */
+    /** Hero alive + strategy trả về enemy → selectTarget trả enemy đó. */
     @Test
-    void healOnDeadHeroIsNoOp() {
-        Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
+    void aliveHeroDelegatesTargetSelectionToStrategy() {
+        // Stub strategy trả về enemy cố định, verify Hero chỉ delegate
+        TargetSelector alwaysReturnsFirst = (attacker, enemies) -> enemies.isEmpty() ? null : enemies.get(0);
+        Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, alwaysReturnsFirst);
+        Enemy a = TestEnemy.at(new Position(5, 0), 100, "A");
 
-        hero.takeDamage(100.0f);
-        hero.heal(50.0f);
+        Enemy result = hero.selectTarget(List.of(a));
 
-        assertEquals(0.0f, hero.getCurrentHp());
-        assertFalse(hero.isAlive(), "Heal on dead hero must not revive");
-    }
-
-    /** Cycle 7 — GREEN. */
-    @Test
-    void respawnRestoresHeroToFullHpAndAlive() {
-        Hero hero = new Hero("Yena", new Position(0, 0), 100.0f, new NearestEnemy());
-
-        hero.takeDamage(100.0f);
-        hero.respawn();
-
-        assertEquals(100.0f, hero.getCurrentHp());
-        assertTrue(hero.isAlive(), "Respawned hero must be alive");
+        assertEquals(a, result);
     }
 }
