@@ -22,6 +22,14 @@ class HeroCatalogTest {
     }
 
     @Test
+    void findToroByName() {
+        Optional<Attribute> attribute = HeroCatalog.find(Toro.NAME);
+
+        assertTrue(attribute.isPresent());
+        assertSame(Toro.attribute(), attribute.get());
+    }
+
+    @Test
     void findReturnsEmptyForUnknownName() {
         Optional<Attribute> attribute = HeroCatalog.find("NotARealHero");
 
@@ -60,6 +68,11 @@ class HeroCatalogTest {
     @Test
     void namesContainsYorn() {
         assertTrue(HeroCatalog.names().contains(Yorn.NAME));
+    }
+
+    @Test
+    void namesContainsToro() {
+        assertTrue(HeroCatalog.names().contains(Toro.NAME));
     }
 
     @Test

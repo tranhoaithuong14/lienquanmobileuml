@@ -10,7 +10,8 @@ import java.util.Set;
 public final class HeroCatalog {
 
     private static final Map<String, Attribute> TEMPLATES = Map.of(
-            Yorn.NAME, Yorn.attribute()
+            Yorn.NAME, Yorn.attribute(),
+            Toro.NAME, Toro.attribute()
     );
 
     private HeroCatalog() {}
