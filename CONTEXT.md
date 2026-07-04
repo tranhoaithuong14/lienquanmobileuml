@@ -46,6 +46,10 @@ _Avoid_: Champion, Character, Avatar
 Any entity that can be picked as a target: Hero, minion, jungle monster, tower. Interface the strategies read from.
 _Avoid_: Target, Opponent
 
+**HeroRole**:
+A classification bucket that every Hero belongs to, exactly one of `TANK` / `WARRIOR` / `ASSASSIN` / `MAGE` / `MARKSMAN` / `SUPPORT`. Used for UI filter, lane assignment, item recommendations, team-composition analysis — not for combat calculation. Single-value per Hero: the official Liên Quân Mobile data contract models role as one integer (`job` 1–6), and Arena of Valor matches. (Genre note: League of Legends uses a 1–2 tag array — different convention; see `.scratch/research/hero-role-classification.md`.)
+_Avoid_: Class, Archetype
+
 **currentHp**:
 Current HP of the Hero, `float`. Mutable via `takeDamage` and `heal`. Floor 0, ceiling hp.
 _Avoid_: hp, HP

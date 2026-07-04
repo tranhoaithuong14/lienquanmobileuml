@@ -3,12 +3,16 @@ package com.moba.combat;
 public record Attribute(
         Basic basic,
         Offensive offensive,
-        AttackRange attackRange
+        AttackRange attackRange,
+        HeroRole role
 ) {
 
     public Attribute {
         if (attackRange == null) {
             throw new IllegalArgumentException("attackRange must not be null");
+        }
+        if (role == null) {
+            throw new IllegalArgumentException("role must not be null");
         }
     }
 
@@ -30,7 +34,8 @@ public record Attribute(
             float cooldownReduction,
             float armorPenPercent,
             float magicPenPercent,
-            AttackRange attackRange
+            AttackRange attackRange,
+            HeroRole role
     ) {
         this(
                 new Basic(hp, normalAttack, abilityPower, armor, magicDefense, maxMana),
@@ -38,7 +43,8 @@ public record Attribute(
                         attackSpeed, critChance, critDamage,
                         lifeSteal, spellVamp, cooldownReduction,
                         armorPenPercent, magicPenPercent),
-                attackRange);
+                attackRange,
+                role);
     }
 
     /* shortcut — delegate down to basic / offensive */

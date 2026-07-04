@@ -2,7 +2,7 @@
 
 ## Status
 
-**Superseded by implementation under `com.moba.combat`** — research deliverable retained as historical record of the primary-source findings that shaped the value-object decomposition (`Attribute` = `Basic` + `Offensive` + `AttackRange`). The implementation kept the directional semantics (pen subtracts before mitigation; life steal is post-mitigation; critDamage ≥ 1.0; cooldownReduction ∈ [0, 0.40]) and dropped the multi-client cross-checks that were useful during research but have no place in the teaching artifact.
+**Superseded by implementation under `com.moba.combat`** — research deliverable retained as historical record of the primary-source findings that shaped the value-object decomposition (`Attribute` = `Basic` + `Offensive` + `AttackRange` + `HeroRole`). The implementation kept the directional semantics (pen subtracts before mitigation; life steal is post-mitigation; critDamage ≥ 1.0; cooldownReduction ∈ [0, 0.40]) and dropped the multi-client cross-checks that were useful during research but have no place in the teaching artifact. The `HeroRole` enum (single value per hero) was added separately after a primary-source investigation documented in `.scratch/research/hero-role-classification.md`.
 
 > Note on language: prose is English for density; domain terms use the ubiquitous language from `CONTEXT.md` (Hero, Enemy, currentHp, hp, alive, Position, TargetSelector, NearestEnemy, LowestHP). ADR-0001 and ADR-0002 remain the binding constraints.
 
@@ -57,7 +57,9 @@ Reference stat sheet — a ranged marksman archetype, values typical for the gen
 - *Records are Value Objects* (Bloch Item 17 + JLS records): a Java `record` is shallowly immutable with generated `equals`/`hashCode`/`toString` — the language's built-in Value Object.
 - *Introduce Parameter Object / small grouped values* (Evans Ch. 5; Fowler, *Refactoring*).
 
-**Recommendation.** An immutable `Attribute` (or equivalent) **record** composed of a few cohesive Value Objects — `Basic` (hp, normalAttack, abilityPower, armor, magicDefense, maxMana), `Offensive` (movementSpeed, armorPen, magicPen, attackSpeed, crit, lifeSteal, spellVamp, cooldownReduction, attackRange), `AttackRange` enum. Keep the existing mutable `CombatStats` as the **vitals runtime state** (currentHp/currentMana/alive); do not merge the two. Model armor / magic defense and each pen as flat + bonus% / flat + pct Value Objects to kill data clumps.
+**Recommendation.** An immutable `Attribute` (or equivalent) **record** composed of a few cohesive Value Objects — `Basic` (hp, normalAttack, abilityPower, armor, magicDefense, maxMana), `Offensive` (movementSpeed, armorPen, magicPen, attackSpeed, crit, lifeSteal, spellVamp, cooldownReduction, attackRange), `AttackRange` enum, `HeroRole` enum (single value per Hero, see Finding below). Keep the existing mutable `CombatStats` as the **vitals runtime state** (currentHp/currentMana/alive); do not merge the two. Model armor / magic defense and each pen as flat + bonus% / flat + pct Value Objects to kill data clumps.
+
+**Role classification — single value, see `.scratch/research/hero-role-classification.md`.** Every Hero belongs to exactly one of `TANK / WARRIOR / ASSASSIN / MAGE / MARKSMAN / SUPPORT`. The Liên Quân Mobile / Arena of Valor data contract (`job` integer 1–6) treats role as a single integer per hero, and the publisher's own UI filter (six mutually exclusive tabs) reinforces that. (Genre divergence: Riot's League of Legends Data Dragon stores role as a `tags` array of length 1–2 — but this repo models Liên Quân Mobile, so single value is the right shape.)
 
 ### R3 — How to model `attackRange`
 

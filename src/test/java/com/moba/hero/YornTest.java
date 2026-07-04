@@ -3,6 +3,7 @@ package com.moba.hero;
 import com.moba.combat.AttackRange;
 import com.moba.combat.Attribute;
 import com.moba.combat.Hero;
+import com.moba.combat.HeroRole;
 import com.moba.combat.Position;
 import com.moba.strategy.LowestHP;
 import org.junit.jupiter.api.Test;
@@ -93,6 +94,11 @@ class YornTest {
     @Test
     void yornAttackRangeIsRanged() {
         assertEquals(AttackRange.RANGED, Yorn.attribute().attackRange());
+    }
+
+    @Test
+    void yornRoleIsMarksman() {
+        assertEquals(HeroRole.MARKSMAN, Yorn.attribute().role());
     }
 
     @Test

@@ -5,7 +5,7 @@
 Translate ADR-0003's research into Java, while ADR-0002 (HP state machine) stays untouched.
 
 - `src/main/java/com/moba/combat/AttackRange.java` — enum `MELEE` / `RANGED` (Bloch Item 34; ADR-0003 R3).
-- `src/main/java/com/moba/combat/Attribute.java` — `record` Value Object composed of `Basic` + `Offensive` + `AttackRange`, immutable. Compact constructor validates caps verified in ADR-0003 R7 (critDamage ≥ 1.0, cooldownReduction ∈ [0, 0.40], critChance ∈ [0, 1], movementSpeed > 0, hp > 0, attackRange non-null).
+- `src/main/java/com/moba/combat/Attribute.java` — `record` Value Object composed of `Basic` + `Offensive` + `AttackRange` + `HeroRole`, immutable. Compact constructor validates caps verified in ADR-0003 R7 (critDamage ≥ 1.0, cooldownReduction ∈ [0, 0.40], critChance ∈ [0, 1], movementSpeed > 0, hp > 0, attackRange non-null, role non-null). `HeroRole` (single value per Hero) was added later after primary-source investigation in `.scratch/research/hero-role-classification.md` confirmed the Liên Quân Mobile / AoV data contract models role as one-of-six, not a multi-valued set.
 - `src/main/java/com/moba/combat/Hero.java` — refactored. Constructor now takes `Attribute`; delegates HP lifecycle to existing `CombatStats` (ADR-0002). `getAttribute()` exposes the sheet for future consumers (e.g. `DamageCalculator`).
 - `src/main/java/com/moba/hero/Yorn.java` — fixture factory. Cached `Attribute` instance for the reference ranged-marksman values. `create()` / `create(position, selector)` shortcuts.
 - `src/main/java/com/moba/hero/HeroCatalog.java` — Repository (Evans Ch.6) over `Map<String, Attribute>`. Lookup-by-name (`find` / `require` / `names`). Not a Factory — see "Why no Factory" below.

@@ -18,7 +18,7 @@ class HeroTest {
         return new Attribute(
                 hp, 0f, 0f, 0f, 0f, 0f,
                 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE);
+                AttackRange.MELEE, HeroRole.WARRIOR);
     }
 
     @Test

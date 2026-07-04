@@ -11,7 +11,8 @@ class AttributeTest {
         return new Attribute(
                 /* basic:       */ hp, 0f, 0f, 0f, 0f, 0f,
                 /* offensive:   */ 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
-                /* attackRange: */ AttackRange.MELEE);
+                /* attackRange: */ AttackRange.MELEE,
+                /* role:        */ HeroRole.WARRIOR);
     }
 
     @Test
@@ -34,11 +35,11 @@ class AttributeTest {
         assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f,
                 /* movementSpeed */ 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE));
+                AttackRange.MELEE, HeroRole.WARRIOR));
         assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f,
                 /* movementSpeed */ -1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE));
+                AttackRange.MELEE, HeroRole.WARRIOR));
     }
 
     @Test
@@ -46,11 +47,11 @@ class AttributeTest {
         assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
                 /* critChance */ -0.01f, /* critDamage */ 1f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE));
+                AttackRange.MELEE, HeroRole.WARRIOR));
         assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f,
                 /* critChance */ 1.01f, /* critDamage */ 1f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE));
+                AttackRange.MELEE, HeroRole.WARRIOR));
     }
 
     @Test
@@ -58,7 +59,7 @@ class AttributeTest {
         assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f,
                 /* critDamage */ 0.99f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE));
+                AttackRange.MELEE, HeroRole.WARRIOR));
     }
 
     @Test
@@ -66,7 +67,7 @@ class AttributeTest {
         Attribute s = new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f,
                 /* critDamage */ 5.0f, 0f, 0f, 0f, 0f, 0f,
-                AttackRange.MELEE);
+                AttackRange.MELEE, HeroRole.WARRIOR);
 
         assertEquals(5.0f, s.critDamage());
     }
@@ -76,13 +77,20 @@ class AttributeTest {
         assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f,
                 /* cooldownReduction */ 0.41f, 0f, 0f,
-                AttackRange.MELEE));
+                AttackRange.MELEE, HeroRole.WARRIOR));
     }
 
     @Test
     void rejectsNullAttackRange() {
         assertThrows(IllegalArgumentException.class, () -> new Attribute(
                 100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
-                null));
+                null, HeroRole.WARRIOR));
+    }
+
+    @Test
+    void rejectsNullRole() {
+        assertThrows(IllegalArgumentException.class, () -> new Attribute(
+                100f, 0f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 0f,
+                AttackRange.MELEE, null));
     }
 }

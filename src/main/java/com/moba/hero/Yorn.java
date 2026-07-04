@@ -4,6 +4,7 @@ import com.moba.combat.AttackRange;
 import com.moba.combat.Attribute;
 import com.moba.combat.Basic;
 import com.moba.combat.Hero;
+import com.moba.combat.HeroRole;
 import com.moba.combat.Offensive;
 import com.moba.combat.Position;
 import com.moba.strategy.LowestHP;
@@ -20,7 +21,8 @@ public final class Yorn {
             new Offensive(
                     360f, 0f, 0f, 0f, 0f, 2.00f, 0f, 0f, 0f, 0f, 0f
             ),
-            AttackRange.RANGED
+            AttackRange.RANGED,
+            HeroRole.MARKSMAN
     );
 
     private Yorn() {}
