@@ -1,15 +1,15 @@
-# Mission: Strategy Pattern in Java through a MOBA combat simulation
+# Mission: AoV Targeting Simulation in Java
 
 ## Why
 
-Building a Java teaching artifact that simulates MOBA combat systems — starting with the **hero auto-targeting** mechanic. The Strategy pattern is the first GoF pattern to master, because it shows up across most game subsystems (AI, combat, item builds, target selection). Once Strategy is internalized, subsequent patterns (State, Observer, Command) feel much more natural.
+Building a Java teaching artifact that simulates Arena of Valor / Liên Quân Mobile combat systems — starting with the **targeting controls** players actually use in game. Strategy is still useful, but only inside the targeting pipeline; the player/control setting and action context decide which strategy applies.
 
-End goal: read Strategy pattern code in Java fluently, recognize where it should be applied in real game code, and write clean implementations with clear UML diagrams for the teaching artifact.
+End goal: read combat-targeting code in Java fluently, recognize where Strategy should and should not be applied in real game code, and write clean implementations with clear UML diagrams for the teaching artifact.
 
 ## Success looks like
 
 - Read any Java code that uses the Strategy pattern and immediately recognize the Context, Strategy, and ConcreteStrategy roles — without reading comments.
-- Write the 4 canonical `TargetSelector` implementations (`NearestEnemy`, `LowestHP`, `HeroPriority`, `MarkedTarget`) from scratch, with idiomatic interface + Context per GoF.
+- Model AoV targeting priority correctly: nearest, lowest HP amount, lowest HP percent, avatar lock, target kind filters, tap-to-cast abilities, directional tap priority, and finisher overrides.
 - Explain why Strategy beats `if/else` chains or `switch` statements in this case, and why it beats inheritance.
 - Draw a class diagram (PlantUML) for Strategy and apply it to a different subsystem outside target selection.
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-accepted
+superseded by [ADR-0004](0004-aov-targeting-system.md)
 
 ## Context
 

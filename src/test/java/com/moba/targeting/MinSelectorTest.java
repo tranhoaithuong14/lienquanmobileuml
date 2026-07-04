@@ -1,4 +1,4 @@
-package com.moba.strategy;
+package com.moba.targeting;
 
 import com.moba.combat.Enemy;
 import com.moba.combat.Position;
@@ -29,7 +29,7 @@ class MinSelectorTest {
 
         Enemy result = MinSelector.minBy(List.of(a, b), Enemy::getCurrentHp);
 
-        assertSame(a, result, "Tied scores — first element should win");
+        assertSame(a, result, "Tied scores - first element should win");
     }
 
     @Test

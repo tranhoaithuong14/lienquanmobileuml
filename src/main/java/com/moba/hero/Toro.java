@@ -8,8 +8,6 @@ import com.moba.combat.Hero;
 import com.moba.combat.HeroRole;
 import com.moba.combat.Offensive;
 import com.moba.combat.Position;
-import com.moba.strategy.LowestHP;
-import com.moba.strategy.TargetSelector;
 
 public final class Toro {
 
@@ -34,10 +32,10 @@ public final class Toro {
     }
 
     public static Hero create() {
-        return create(new Position(0, 0), new LowestHP());
+        return create(new Position(0, 0));
     }
 
-    public static Hero create(Position position, TargetSelector targetSelector) {
-        return new Hero(NAME, position, attribute(), targetSelector);
+    public static Hero create(Position position) {
+        return new Hero(NAME, position, attribute());
     }
 }

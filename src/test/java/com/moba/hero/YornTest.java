@@ -3,7 +3,6 @@ package com.moba.hero;
 import com.moba.combat.CombatResource;
 import com.moba.combat.Hero;
 import com.moba.combat.Position;
-import com.moba.strategy.LowestHP;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,8 +25,8 @@ class YornTest {
     }
 
     @Test
-    void yornCreateAllowsOverridingPositionAndSelector() {
-        Hero yorn = Yorn.create(new Position(10, 20), new LowestHP());
+    void yornCreateAllowsOverridingPosition() {
+        Hero yorn = Yorn.create(new Position(10, 20));
 
         assertEquals(new Position(10, 20), yorn.getPosition());
     }

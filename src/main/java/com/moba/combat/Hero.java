@@ -1,18 +1,13 @@
 package com.moba.combat;
 
-import com.moba.strategy.TargetSelector;
-
-import java.util.List;
-
 public class Hero implements Enemy {
 
     private final String name;
     private final Position position;
     private final Attribute attribute;
     private final CombatStats vitals;
-    private final TargetSelector targetSelector;
 
-    public Hero(String name, Position position, Attribute attribute, TargetSelector targetSelector) {
+    public Hero(String name, Position position, Attribute attribute) {
         if (attribute == null) {
             throw new IllegalArgumentException("attribute must not be null");
         }
@@ -20,7 +15,6 @@ public class Hero implements Enemy {
         this.position = position;
         this.attribute = attribute;
         this.vitals = new CombatStats(attribute.basic().hp());
-        this.targetSelector = targetSelector;
     }
 
     public Attribute getAttribute() {
@@ -43,13 +37,6 @@ public class Hero implements Enemy {
         return vitals.isAlive();
     }
 
-    public Enemy selectTarget(List<Enemy> enemies) {
-        if (!vitals.isAlive()) {
-            return null;
-        }
-        return targetSelector.select(this, enemies);
-    }
-
     @Override
     public Position getPosition() {
         return position;
@@ -58,6 +45,16 @@ public class Hero implements Enemy {
     @Override
     public float getCurrentHp() {
         return vitals.getCurrentHp();
+    }
+
+    @Override
+    public float getMaxHp() {
+        return attribute.basic().hp();
+    }
+
+    @Override
+    public TargetKind getTargetKind() {
+        return TargetKind.HERO;
     }
 
     @Override

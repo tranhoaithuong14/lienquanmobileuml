@@ -1,6 +1,6 @@
-# Strategy Pattern Glossary
+# AoV Targeting Glossary
 
-Canonical vocabulary for the Strategy pattern teaching workspace. Every lesson, code sample, and reference must use these terms. If a new term shows up in a lesson, it is only added here after the user has used it correctly in a quiz or exercise.
+Canonical vocabulary for the AoV targeting teaching workspace. Strategy remains part of the implementation, but the domain source of truth is the targeting pipeline, not a hero-owned selector.
 
 ## Terms
 
@@ -21,23 +21,44 @@ External code that chooses which ConcreteStrategy to wire into the Context (at c
 _Avoid_: User code, Main
 
 **Target Selection**:
-In MOBA games, the rule that decides *which enemy* is hit when a hero auto-attacks or uses a skill.
-_Avoid_: Targeting, Auto-attack logic
+The in-combat decision that turns a player action into a concrete enemy unit. In AoV this depends on player priority, action type, range, target kind filters, and avatar lock.
+_Avoid_: Hero-owned auto-attack logic
 
-**NearestEnemy**:
-A ConcreteStrategy that selects the target with the smallest Euclidean distance from the attacker.
-_Avoid_: Closest target strategy
+**TargetingSystem**:
+Context module that filters target candidates, applies AoV-specific action rules, then delegates scoring to a priority Strategy.
+_Avoid_: Hero target selector
 
-**LowestHP**:
-A ConcreteStrategy that selects the target with the lowest current HP.
-_Avoid_: Weakest target, Lowest health strategy
+**TargetingRequest**:
+Value object containing attacker, action, player priority, range, out-of-range tolerance, allowed target kinds, and optional locked target.
+_Avoid_: passing only attacker + candidates
 
-**MarkedTarget**:
-_(Out of scope.)_ Per-ability logic (marked, target lock, skillshot direction) — does not belong to `TargetSelector`. Don't force it into the interface.
-_Avoid_: TargetSelector implementation for marks
+**TargetingPriority**:
+Player/control setting: `NEAREST`, `LOWEST_HP_AMOUNT`, or `LOWEST_HP_PERCENT`.
+_Avoid_: hero strategy
 
-**HeroPriority**:
-_(Not implemented.)_ Filters the candidate list to only enemy heroes, ignoring minions and jungle monsters. Currently unused in the model because the genre only has 2 global strategies.
+**TargetingAction**:
+The action being resolved: normal attack, tap-to-cast ability, directional tap ability, or finisher ability.
+_Avoid_: treating every action as normal attack
+
+**TargetSelector**:
+Strategy interface inside `com.moba.targeting`. It chooses one target from an already-filtered candidate list.
+_Avoid_: storing TargetSelector on Hero
+
+**NearestTarget**:
+ConcreteStrategy that selects the candidate with the smallest Euclidean distance from the attacker.
+_Avoid_: NearestEnemy
+
+**LowestHpAmount**:
+ConcreteStrategy that selects the candidate with the lowest current HP amount.
+_Avoid_: LowestHP
+
+**LowestHpPercent**:
+ConcreteStrategy that selects the candidate with the lowest current HP percentage.
+_Avoid_: conflating HP amount with HP percent
+
+**TargetKind**:
+Target category: `HERO`, `MINION`, `MONSTER`, `TOWER`.
+_Avoid_: assuming every Enemy is a Hero
 
 ## Combat lifecycle (added 2026-07-04)
 
@@ -82,5 +103,5 @@ _Avoid_: getDistance, euclideanDistance
 ## Strategy helpers (added 2026-07-04)
 
 **MinSelector**:
-Static helper in package `strategy`. Method `minBy(List<T>, ToDoubleFunction<T>)` returns the element with the smallest score. Used by NearestEnemy (scorer = distanceTo) and LowestHP (scorer = getCurrentHp). Tie-break: strict less-than — first element wins.
+Static helper in package `targeting`. Method `minBy(List<T>, ToDoubleFunction<T>)` returns the element with the smallest score. Used by `NearestTarget`, `LowestHpAmount`, and `LowestHpPercent`. Tie-break: strict less-than — first element wins.
 _Avoid_: minByScorer, findMin

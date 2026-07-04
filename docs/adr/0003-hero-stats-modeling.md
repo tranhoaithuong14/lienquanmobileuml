@@ -4,7 +4,7 @@
 
 **Superseded by implementation under `com.moba.combat`** — research deliverable retained as historical record of the primary-source findings that shaped the value-object decomposition (`Attribute` = `Basic` + `Offensive` + `AttackRange` + `HeroRole`). The implementation kept the directional semantics (pen subtracts before mitigation; life steal is post-mitigation; critDamage ≥ 1.0; cooldownReduction ∈ [0, 0.40]) and dropped the multi-client cross-checks that were useful during research but have no place in the teaching artifact. The `HeroRole` enum (single value per hero) was added separately after a primary-source investigation documented in `.scratch/research/hero-role-classification.md`.
 
-> Note on language: prose is English for density; domain terms use the ubiquitous language from `CONTEXT.md` (Hero, Enemy, currentHp, hp, alive, Position, TargetSelector, NearestEnemy, LowestHP). ADR-0001 and ADR-0002 remain the binding constraints.
+> Note on language: prose is English for density; domain terms use the ubiquitous language from `CONTEXT.md` (Hero, Enemy, currentHp, hp, alive, Position, TargetingSystem, TargetingRequest, TargetingPriority). ADR-0004 supersedes ADR-0001 for targeting.
 
 ## Context
 
@@ -129,7 +129,7 @@ trueDamage          = rawTrue                        // ignores armor by definit
 
 - Adding a new derived stat or damage type becomes a new class (Strategy / method on a Value Object), not an edit across call sites — OCP, consistent with ADR-0001.
 - Immutable base-stat Value Objects are thread-safe and freely shareable across the catalog.
-- Target-selectors stay decoupled from combat stats via narrow role interfaces (ISP), so `NearestEnemy` / `LowestHP` remain unit-testable in isolation.
+- Targeting stays decoupled from combat stats via narrow role interfaces (ISP), so `NearestTarget` / `LowestHpAmount` / `LowestHpPercent` remain unit-testable in isolation.
 - ADR-0002 is untouched: HP stays a `float` mutable state machine; static values live elsewhere.
 
 **Harder / costs.**

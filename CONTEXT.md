@@ -1,6 +1,6 @@
-# MOBA — Target Selection & Combat Context
+# AoV — Targeting & Combat Context
 
-Domain context for redesigning the in-combat auto-targeting system and the Hero HP lifecycle in a generic MOBA, in Java with GoF patterns. This is a single bounded context — all work in this repo belongs to the same context.
+Domain context for redesigning the in-combat targeting system and the Hero HP lifecycle in Arena of Valor / Liên Quân Mobile, in Java with GoF patterns. This is a single bounded context — all work in this repo belongs to the same context.
 
 ## Language
 
@@ -25,25 +25,53 @@ _Avoid_: User code, Main
 ### Target Selection
 
 **Target Selection**:
-The hero auto-target rule in MOBA combat — when a hero auto-attacks, who does it hit. There are exactly 2 global auto-target rules in the genre: Nearest and LowestHP. Per-ability logic (marked target, target lock, skillshot direction) is a different concern and does not belong in the `TargetSelector` interface.
-_Avoid_: Targeting, Auto-attack logic
+The in-combat decision that turns a player action into a concrete enemy unit. In AoV, this is not owned by `Hero`; it depends on player targeting priority, target kind filters, avatar lock, range, and action type.
+_Avoid_: Hero-owned auto-attack rule
 
-**NearestEnemy**:
-A ConcreteStrategy that selects the target with the smallest Euclidean distance from the attacker. Inspired by classic ranged-hero kiting logic in any MOBA.
-_Avoid_: Closest target strategy
+**TargetingSystem**:
+Context module for AoV target selection. It filters candidates by alive/range/kind, applies avatar lock when valid, applies directional tap kind priority, resolves action-specific priority, then delegates scoring to a `TargetSelector`.
+_Avoid_: Hero target selector
 
-**LowestHP**:
-A ConcreteStrategy that selects the target with the lowest current HP. The "focus fire" or "execute" rule common to assassins and finishers.
-_Avoid_: Weakest target, Lowest health strategy
+**TargetingRequest**:
+Value object carrying the action context: attacker, `TargetingAction`, player `TargetingPriority`, range, out-of-range tolerance, allowed `TargetKind`s, and optional locked target.
+_Avoid_: passing attacker + enemies only
+
+**TargetingPriority**:
+Player/control setting for automatic selection: `NEAREST`, `LOWEST_HP_AMOUNT`, or `LOWEST_HP_PERCENT`. AoV applies this setting to normal attacks and tap-to-cast abilities; finisher abilities can override it.
+_Avoid_: hero strategy
+
+**TargetingAction**:
+Kind of action being resolved: normal attack, tap-to-cast ability, directional tap ability, or finisher ability. Action matters because AoV has different lock-on rules for these cases.
+_Avoid_: treating every skill as an auto-attack
+
+**TargetSelector**:
+Strategy interface inside the targeting module. It scores an already-filtered candidate list for one priority rule.
+_Avoid_: storing this on Hero
+
+**NearestTarget**:
+ConcreteStrategy that selects the candidate with the smallest Euclidean distance from the attacker.
+_Avoid_: NearestEnemy
+
+**LowestHpAmount**:
+ConcreteStrategy that selects the candidate with the lowest current HP amount.
+_Avoid_: LowestHP
+
+**LowestHpPercent**:
+ConcreteStrategy that selects the candidate with the lowest `currentHp / maxHp`.
+_Avoid_: conflating percent with amount
+
+**TargetKind**:
+The target category used by targeting filters: `HERO`, `MINION`, `MONSTER`, `TOWER`.
+_Avoid_: assuming every enemy is a hero
 
 ### Combat Lifecycle
 
 **Hero**:
-A character in a MOBA. Both an attacker (owns a `TargetSelector` to pick a target) and a target (implements `Enemy` so others can pick it). Owns HP lifecycle (currentHp, hp, alive state).
+A character in AoV. Both an attacker and a target (implements `Enemy` so the targeting module can pick it). Owns HP lifecycle (currentHp, hp, alive state), but does not own targeting priority.
 _Avoid_: Champion, Character, Avatar
 
 **Enemy**:
-Any entity that can be picked as a target: Hero, minion, jungle monster, tower. Interface the strategies read from.
+Any enemy entity that can be picked as a target: Hero, minion, jungle monster, tower. Exposes position, current HP, max HP, target kind, name, alive state, and HP percent for targeting.
 _Avoid_: Target, Opponent
 
 **HeroRole**:
@@ -91,5 +119,5 @@ _Avoid_: getDistance, euclideanDistance
 ### Strategy Helpers
 
 **MinSelector**:
-Static helper in package `strategy`. Method `minBy(List<T>, ToDoubleFunction<T>)` returns the element with the smallest score. Used by NearestEnemy (scorer = `distanceTo`) and LowestHP (scorer = `getCurrentHp`). Tie-break: strict less-than — first element wins.
+Static helper in package `targeting`. Method `minBy(List<T>, ToDoubleFunction<T>)` returns the element with the smallest score. Used by `NearestTarget`, `LowestHpAmount`, and `LowestHpPercent`. Tie-break: strict less-than — first element wins.
 _Avoid_: minByScorer, findMin

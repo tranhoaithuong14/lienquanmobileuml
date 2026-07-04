@@ -1,4 +1,4 @@
-package com.moba.strategy;
+package com.moba.targeting;
 
 import java.util.List;
 import java.util.function.ToDoubleFunction;
