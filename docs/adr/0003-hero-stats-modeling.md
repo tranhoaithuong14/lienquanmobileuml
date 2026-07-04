@@ -2,7 +2,7 @@
 
 ## Status
 
-**Superseded by implementation under `com.moba.combat`** — research deliverable retained as historical record of the primary-source findings that shaped the value-object decomposition (`Attribute` = `BasicStats` + `OffensiveStats` + `AttackRange`). The implementation kept the directional semantics (pen subtracts before mitigation; life steal is post-mitigation; critDamage ≥ 1.0; cooldownReduction ∈ [0, 0.40]) and dropped the multi-client cross-checks that were useful during research but have no place in the teaching artifact.
+**Superseded by implementation under `com.moba.combat`** — research deliverable retained as historical record of the primary-source findings that shaped the value-object decomposition (`Attribute` = `Basic` + `Offensive` + `AttackRange`). The implementation kept the directional semantics (pen subtracts before mitigation; life steal is post-mitigation; critDamage ≥ 1.0; cooldownReduction ∈ [0, 0.40]) and dropped the multi-client cross-checks that were useful during research but have no place in the teaching artifact.
 
 > Note on language: prose is English for density; domain terms use the ubiquitous language from `CONTEXT.md` (Hero, Enemy, currentHp, hp, alive, Position, TargetSelector, NearestEnemy, LowestHP). ADR-0001 and ADR-0002 remain the binding constraints.
 
@@ -57,7 +57,7 @@ Reference stat sheet — a ranged marksman archetype, values typical for the gen
 - *Records are Value Objects* (Bloch Item 17 + JLS records): a Java `record` is shallowly immutable with generated `equals`/`hashCode`/`toString` — the language's built-in Value Object.
 - *Introduce Parameter Object / small grouped values* (Evans Ch. 5; Fowler, *Refactoring*).
 
-**Recommendation.** An immutable `Attribute` (or equivalent) **record** composed of a few cohesive Value Objects — `BasicStats` (hp, normalAttack, abilityPower, armor, magicDefense, maxMana), `OffensiveStats` (movementSpeed, armorPen, magicPen, attackSpeed, crit, lifeSteal, spellVamp, cooldownReduction, attackRange), `AttackRange` enum. Keep the existing mutable `CombatStats` as the **vitals runtime state** (currentHp/currentMana/alive); do not merge the two. Model armor / magic defense and each pen as flat + bonus% / flat + pct Value Objects to kill data clumps.
+**Recommendation.** An immutable `Attribute` (or equivalent) **record** composed of a few cohesive Value Objects — `Basic` (hp, normalAttack, abilityPower, armor, magicDefense, maxMana), `Offensive` (movementSpeed, armorPen, magicPen, attackSpeed, crit, lifeSteal, spellVamp, cooldownReduction, attackRange), `AttackRange` enum. Keep the existing mutable `CombatStats` as the **vitals runtime state** (currentHp/currentMana/alive); do not merge the two. Model armor / magic defense and each pen as flat + bonus% / flat + pct Value Objects to kill data clumps.
 
 ### R3 — How to model `attackRange`
 
@@ -146,7 +146,7 @@ trueDamage          = rawTrue                        // ignores armor by definit
 ## Open questions
 
 1. **Mitigation coefficient** — can an authoritative source (patch notes, official forum, client data-mine with provenance) confirm the `DEF/(DEF+k)` curve and `k`? Until then it stays behind a Strategy, marked UNVERIFIED.
-2. **Split granularity (R2)** — one `Attribute` record now, or `BasicStats`/`OffensiveStats` split from the start? Depends on how soon consumers need narrow slices.
+2. **Split granularity (R2)** — one `Attribute` record now, or `Basic`/`Offensive` split from the start? Depends on how soon consumers need narrow slices.
 3. **Role-interface vocabulary (R5)** — names for the position-only and hp-only interfaces; must be added to `CONTEXT.md` with `_Avoid_` aliases before coding.
 4. **Where do the bonus channels come from** — items, runes, level? Modeling the *source* of bonuses (not just the total) may pull in the Decorator/aggregation design earlier than expected.
 5. **Regen & energy** — do we model HP/5s, Mana/5s, and energy-type heroes now, or defer?
